@@ -24,20 +24,23 @@ $variants = @(
     @{Name='command-console-restricted'; Encoded=$false; Restricted=$true; AsyncClose=$true; Relative=$true; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole},
     @{Name='command-console-restricted-no-module'; Encoded=$false; Restricted=$true; AsyncClose=$true; Relative=$true; Body=('$ProgressPreference=''SilentlyContinue'';' + $prefix.Replace('New-Object System.Text.UTF8Encoding($false)', '[Text.UTF8Encoding]::new($false)') + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole)}
 )
-# Vary only named operating-system metadata. Never inherit arbitrary process environment
-# or PowerShell policy variables, and never print inherited values.
-$environmentGroups = @{
-    'system-drive' = @('SystemDrive')
-    'platform' = @('SystemDrive','OS','NUMBER_OF_PROCESSORS','PROCESSOR_ARCHITECTURE')
-    'program-directories' = @('ProgramFiles','ProgramFiles(x86)','ProgramW6432','CommonProgramFiles','CommonProgramFiles(x86)','CommonProgramW6432')
-    'program-data' = @('ProgramData','ALLUSERSPROFILE','PUBLIC')
-    'user-directories' = @('HOMEDRIVE','HOMEPATH','USERNAME','USERDOMAIN')
-}
-$allNames = @($environmentGroups.Values | ForEach-Object { $_ } | Sort-Object -Unique)
-$environmentGroups['combined'] = $allNames
-foreach ($group in $environmentGroups.Keys | Sort-Object) {
-    $variants += @{Name='restricted-extra-' + $group; Encoded=$false; Restricted=$true; ExtraEnvironment=$environmentGroups[$group];
-        AsyncClose=$true; Relative=$true; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole}
+# Separate environment, executable resolution and stdin close ownership. Values never logged.
+foreach ($variant in @(
+    @{Name='absolute-restricted-sync'; Restricted=$true; Relative=$false; AsyncClose=$false},
+    @{Name='absolute-restricted-async'; Restricted=$true; Relative=$false; AsyncClose=$true},
+    @{Name='absolute-inherited-async'; Restricted=$false; Relative=$false; AsyncClose=$true},
+    @{Name='relative-inherited-sync'; Restricted=$false; Relative=$true; AsyncClose=$false},
+    @{Name='restricted-inherited-modulepath'; Restricted=$true; ExtraEnvironment=@('PSModulePath')},
+    @{Name='restricted-inherited-cachepath'; Restricted=$true; ExtraEnvironment=@('PSModuleAnalysisCachePath')},
+    @{Name='restricted-no-cache'; Restricted=$true; DisableCache=$true},
+    @{Name='restricted-explicit-utility'; Restricted=$true; ExplicitUtility=$true}
+)) {
+    $variant.Encoded=$false
+    $variant.Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole
+    if ($variant.ExplicitUtility) {
+        $variant.Body="[Console]::Error.WriteLine('JTS:explicit-import'); Import-Module (`$PSHOME + '\Modules\Microsoft.PowerShell.Utility\Microsoft.PowerShell.Utility.psd1'); " + $variant.Body
+    }
+    $variants += $variant
 }
 foreach ($variant in $variants) {
     $start = [Diagnostics.ProcessStartInfo]::new()
@@ -61,6 +64,7 @@ foreach ($variant in $variants) {
         }
         $start.Environment.Clear()
         foreach ($name in $inherited.Keys) { $start.Environment[$name] = $inherited[$name] }
+        if ($variant.DisableCache) { $start.Environment['PSModuleAnalysisCachePath']='NUL' }
         if ($variant.SystemModules) {
             $start.Environment['PSModulePath'] = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\Modules'
         }
@@ -74,18 +78,19 @@ foreach ($variant in $variants) {
     $process = [Diagnostics.Process]::new(); $process.StartInfo = $start
     $watch = [Diagnostics.Stopwatch]::StartNew(); [void]$process.Start()
     $stdout = $process.StandardOutput.ReadToEndAsync(); $stderr = $process.StandardError.ReadToEndAsync()
+    $imagePath=$process.MainModule.FileName
     $inputError = $null
     try {
         if ($variant.AsyncClose) {
-            $process.StandardInput.WriteAsync($sample).GetAwaiter().GetResult()
-            $process.StandardInput.DisposeAsync().AsTask().GetAwaiter().GetResult()
+            [void]$process.StandardInput.WriteAsync($sample).GetAwaiter().GetResult()
+            [void]$process.StandardInput.DisposeAsync().AsTask().GetAwaiter().GetResult()
         } else { $process.StandardInput.Write($sample); $process.StandardInput.Close() }
     }
     catch { $inputError = $_.Exception.GetType().Name }
     $done = $process.WaitForExit(8000)
     if (-not $done) { $process.Kill($true); [void]$process.WaitForExit(5000) }
     [void][Threading.Tasks.Task]::WaitAll(@($stdout,$stderr),5000)
-    $result = @{name=$variant.Name; completed=$done; elapsedMilliseconds=$watch.ElapsedMilliseconds; exitCode=$process.ExitCode; inputError=$inputError;
+    $result = @{name=$variant.Name; executablePath=$imagePath; completed=$done; elapsedMilliseconds=$watch.ElapsedMilliseconds; exitCode=$process.ExitCode; inputError=$inputError;
         stdout= $(if ($stdout.IsCompletedSuccessfully) { $stdout.Result } else { 'DIAGNOSTIC_READ_NOT_COMPLETED' });
         stderr= $(if ($stderr.IsCompletedSuccessfully) { $stderr.Result } else { 'DIAGNOSTIC_READ_NOT_COMPLETED' })}
     $result | ConvertTo-Json -Compress
