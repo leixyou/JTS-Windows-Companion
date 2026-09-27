@@ -33,6 +33,12 @@ broker test uses a test approval verifier to exercise the real Job Object proces
 path; it does not claim to test interactive UAC consent.
 
 GitHub Windows CI runs this scope and preserves its TRX under
-`windows-powershell-utf8`. The separate independent relay executor retains its
-own bootstrap and requires its own real Windows acceptance; these results do
-not certify that executor.
+`windows-powershell-utf8`. The independent relay executor uses a fixed, ordinary `-Command` bootstrap and
+raw UTF-8 stdin, preserving its existing native exit-code semantics. Only the
+constant bootstrap appears in argv; user scripts remain on stdin. Ordinary text
+mode also covers scripts that explicitly request nonterminating errors. It also
+loads the two built-in modules by exact PSHOME manifest and suppresses progress
+before imports. Windows CI runs its Unicode/exit-code and child-process cleanup
+checks under a disposable standard account with a loaded profile; the evidence
+is the separate `native-execution.trx` in `windows-native-identity`. Current-user
+results alone do not certify the independent executor or a deployed SCM service.

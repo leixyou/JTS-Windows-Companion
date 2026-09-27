@@ -22,7 +22,7 @@ jobs:
       - name: Verify native PowerShell Unicode and cancellation contracts
         run: dotnet test tests/JTS.WindowsCompanion.Tests --configuration Release --no-build --filter "FullyQualifiedName~PowerShellUtf8Tests|FullyQualifiedName~ElevatedPowerShellContainmentTests|FullyQualifiedName~ElevationBrokerLeaseCancellationTests" --logger "trx;LogFileName=powershell-utf8.trx" --results-directory "${{ runner.temp }}/jts-powershell-utf8"
       - name: Diagnose Windows PowerShell stdin ownership
-        if: always()
+        if: failure()
         shell: pwsh
         run: |
           $evidence = Join-Path $env:RUNNER_TEMP 'jts-powershell-utf8'

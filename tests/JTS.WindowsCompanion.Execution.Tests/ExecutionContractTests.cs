@@ -73,8 +73,12 @@ public sealed class ExecutionContractTests
     public void UsesConstantBootstrapWithNoProfileOrExecutionPolicyBypass()
     {
         var arguments = PowerShellLaunchPlan.Arguments;
-        Assert.StartsWith("-NoLogo -NoProfile -NonInteractive -EncodedCommand ", arguments);
-        Assert.Equal(PowerShellLaunchPlan.Bootstrap, Encoding.Unicode.GetString(Convert.FromBase64String(arguments.Split(' ')[^1])));
+        const string prefix = "-NoLogo -NoProfile -NonInteractive -OutputFormat Text -Command \"";
+        Assert.StartsWith(prefix, arguments);
+        Assert.EndsWith("\"", arguments);
+        Assert.DoesNotContain('"', PowerShellLaunchPlan.Bootstrap);
+        Assert.Equal(PowerShellLaunchPlan.Bootstrap.ReplaceLineEndings(" "), arguments[prefix.Length..^1]);
+        Assert.DoesNotContain("EncodedCommand", arguments);
         Assert.DoesNotContain("ExecutionPolicy", arguments);
         Assert.Contains("[Console]::In.ReadToEnd()", PowerShellLaunchPlan.Bootstrap);
     }

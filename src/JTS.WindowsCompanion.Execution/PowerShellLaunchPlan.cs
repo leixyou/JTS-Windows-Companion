@@ -1,29 +1,32 @@
-using System.Text;
-
 namespace JTS.WindowsCompanion.Execution;
 
 internal static class PowerShellLaunchPlan
 {
     // Constant bootstrap only; the user script is never placed in argv, environment or a temporary file.
     internal const string Bootstrap = """
-        $utf8 = New-Object System.Text.UTF8Encoding($false)
-        [Console]::InputEncoding = $utf8
-        [Console]::OutputEncoding = $utf8
-        $OutputEncoding = $utf8
-        $ErrorActionPreference = 'Stop'
+        $ProgressPreference = 'SilentlyContinue';
+        $utf8 = [Text.UTF8Encoding]::new($false);
+        [Console]::InputEncoding = $utf8;
+        [Console]::OutputEncoding = $utf8;
+        $OutputEncoding = $utf8;
+        $ErrorActionPreference = 'Stop';
         try {
-            $code = [Console]::In.ReadToEnd()
-            $global:LASTEXITCODE = 0
-            & ([ScriptBlock]::Create($code))
-            if (-not $?) { exit 1 }
-            exit $global:LASTEXITCODE
+            Import-Module -Name ($PSHOME + '/Modules/Microsoft.PowerShell.Utility/Microsoft.PowerShell.Utility.psd1') -ErrorAction Stop;
+            Import-Module -Name ($PSHOME + '/Modules/Microsoft.PowerShell.Management/Microsoft.PowerShell.Management.psd1') -ErrorAction Stop;
+            $code = [Console]::In.ReadToEnd();
+            $global:LASTEXITCODE = 0;
+            & ([ScriptBlock]::Create($code));
+            if (-not $?) { exit 1 };
+            exit $global:LASTEXITCODE;
         } catch {
-            [Console]::Error.WriteLine($_.ToString())
-            exit 1
+            [Console]::Error.WriteLine($_.ToString());
+            exit 1;
         }
         """;
-    internal static string Arguments => "-NoLogo -NoProfile -NonInteractive -EncodedCommand "
-        + Convert.ToBase64String(Encoding.Unicode.GetBytes(Bootstrap));
+    // The fixed bootstrap contains no double quotes or user data. A normal command
+    // avoids encoded-command CLIXML serialization of nonterminating error records.
+    internal static string Arguments => "-NoLogo -NoProfile -NonInteractive -OutputFormat Text -Command \""
+        + Bootstrap.ReplaceLineEndings(" ") + "\"";
 
     internal static string EnvironmentBlock(string systemDirectory, string windowsDirectory, string profile, string localData)
     {
