@@ -13,13 +13,15 @@ public sealed class WindowsProcessAcceptanceTests
     {
         using var folder = new TestFolder();
         var executor = new StandardAccountPowerShellExecutor(Environment.GetEnvironmentVariable("JTS_EXECUTION_TEST_WORKER_SID")!);
-        var job = ExecutionContractTests.Job("[Console]::Out.Write('中文'); [Console]::Error.Write('stderr'); exit 7", folder.Path);
+        var job = ExecutionContractTests.Job("[Console]::Out.Write('中文 😀'); [Console]::Error.Write('错误 stderr 🚀'); exit 7", folder.Path);
         var sink = new ExecutorLifecycleTests.CaptureSink(); using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(15));
         var result = await executor.ExecuteAsync(job.Binding, job.Payload, sink, timeout.Token);
         Assert.False(result.Success); Assert.Equal("POWERSHELL_EXIT_NONZERO", result.ResultCode);
-        var output = Encoding.UTF8.GetString(sink.Bytes.ToArray()); Assert.Contains("中文", output); Assert.Contains("stderr", output);
+        var output = Encoding.UTF8.GetString(sink.Bytes.ToArray()); Assert.Contains("中文 😀", output); Assert.Contains("错误 stderr 🚀", output);
         var success = ExecutionContractTests.Job("Write-Output 'done'; exit 0", folder.Path);
-        Assert.True((await executor.ExecuteAsync(success.Binding, success.Payload, new ExecutorLifecycleTests.CaptureSink(), timeout.Token)).Success);
+        var successSink = new ExecutorLifecycleTests.CaptureSink();
+        Assert.True((await executor.ExecuteAsync(success.Binding, success.Payload, successSink, timeout.Token)).Success);
+        Assert.Contains("done", Encoding.UTF8.GetString(successSink.Bytes.ToArray()));
     }
     [WindowsWorkerFact]
     public async Task CancellationKillsOrdinaryChildBeforeTerminalReceipt()

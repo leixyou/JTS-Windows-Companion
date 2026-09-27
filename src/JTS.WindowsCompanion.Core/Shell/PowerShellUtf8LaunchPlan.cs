@@ -15,6 +15,8 @@ internal static class PowerShellUtf8LaunchPlan
         [Console]::OutputEncoding = $utf8;
         $OutputEncoding = $utf8;
         try {
+            Import-Module -Name ($PSHOME + '/Modules/Microsoft.PowerShell.Utility/Microsoft.PowerShell.Utility.psd1') -ErrorAction Stop;
+            Import-Module -Name ($PSHOME + '/Modules/Microsoft.PowerShell.Management/Microsoft.PowerShell.Management.psd1') -ErrorAction Stop;
             $jtsScript = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('__JTS_SCRIPT_BASE64__'));
             & ([ScriptBlock]::Create($jtsScript + "`nif (-not `$?) { exit 1 }"))
         } catch {

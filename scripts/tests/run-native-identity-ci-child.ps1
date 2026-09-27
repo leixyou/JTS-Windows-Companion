@@ -4,7 +4,8 @@ param(
     [Parameter(Mandatory = $true)][string] $Dotnet,
     [Parameter(Mandatory = $true)][string] $TestAssembly,
     [Parameter(Mandatory = $true)][string] $IdentityRoot,
-    [Parameter(Mandatory = $true)][string] $ResultsRoot
+    [Parameter(Mandatory = $true)][string] $ResultsRoot,
+    [ValidateNotNullOrEmpty()][string] $ExecutionTestAssembly
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
@@ -30,4 +31,16 @@ $env:JTS_IDENTITY_TEST_ACCOUNT_SID = $ExpectedSid
 $env:JTS_IDENTITY_TEST_DIRECTORY = $IdentityRoot
 & $Dotnet vstest $TestAssembly '--TestCaseFilter:FullyQualifiedName~WindowsIdentityAcceptanceTests|FullyQualifiedName~IdentityTransportTests' `
     '--Logger:trx;LogFileName=native-identity.trx' "--ResultsDirectory:$ResultsRoot"
-exit $LASTEXITCODE
+$identityExitCode = $LASTEXITCODE
+$executionExitCode = 0
+if ($PSBoundParameters.ContainsKey('ExecutionTestAssembly')) {
+    if (-not (Test-Path -LiteralPath $ExecutionTestAssembly -PathType Leaf)) { throw 'The staged Execution test assembly is missing.' }
+    # The testhost and executor inherit this verified primary token and loaded
+    # profile. The executor independently checks parent and suspended child tokens.
+    $env:JTS_EXECUTION_TEST_WORKER_SID = $ExpectedSid
+    & $Dotnet vstest $ExecutionTestAssembly '--TestCaseFilter:FullyQualifiedName~JTS.WindowsCompanion.Execution.Tests.WindowsProcessAcceptanceTests' `
+        '--Logger:trx;LogFileName=native-execution.trx' "--ResultsDirectory:$ResultsRoot"
+    $executionExitCode = $LASTEXITCODE
+}
+if ($identityExitCode -ne 0) { exit $identityExitCode }
+exit $executionExitCode

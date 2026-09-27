@@ -53,6 +53,12 @@ public sealed class PowerShellUtf8Tests
     {
         foreach (var broker in new[] { false, true })
         {
+            var modules = await ExecuteAsync("if (-not (Test-Path -LiteralPath '.')) { throw 'missing fixture' }; "
+                + "$items = @(Get-ChildItem -LiteralPath '.'); Write-Output ('MODULE_OK:' + (Get-Date).Year + ':' + $items.Count)", broker);
+            Assert.Equal(0, modules.ExitCode);
+            Assert.Contains("MODULE_OK:", modules.StandardOutput);
+            Assert.Contains(":0", modules.StandardOutput);
+            Assert.Empty(modules.StandardError);
             var continued = await ExecuteAsync("Write-Error '中文é🚀'; Write-Output 'continued'", broker);
             Assert.Equal(0, continued.ExitCode);
             Assert.Contains("continued", continued.StandardOutput);

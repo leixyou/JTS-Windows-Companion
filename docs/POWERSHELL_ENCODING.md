@@ -16,6 +16,11 @@ exit 1. An explicit `exit N` remains the script's exit code. The launch still us
 `-NoProfile` and `-NonInteractive`, and does not bypass execution policy.
 Progress is suppressed in this child session before any module loads, preventing
 Windows PowerShell 5.1 from mixing serialized progress records into stderr.
+Before the user script runs, the bootstrap imports the Utility and Management
+modules by their exact manifests under the current PowerShell installation's
+`PSHOME`. This makes basic command discovery independent of inherited module
+paths or an external analysis-cache location. The restricted environment is
+preserved; failed imports return an error and remain within the action deadline.
 The user script can explicitly set its own `$ProgressPreference` when needed.
 Existing authorization, cancellation, process containment and byte-output limits
 remain owned by their respective executors.

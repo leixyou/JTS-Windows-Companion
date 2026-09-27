@@ -56,10 +56,10 @@ jobs:
       - name: Verify connection wrapper on Windows PowerShell 5.1
         shell: powershell
         run: ./scripts/tests/test-connection-package-plan.ps1
-      - name: Verify native Windows identity and pinned TLS
+      - name: Verify native Windows identity, pinned TLS and standard-account execution
         shell: pwsh
         run: |
-          ./scripts/tests/run-native-identity-ci.ps1 -TestOutputDirectory ./tests/JTS.WindowsCompanion.Pairing.Tests/bin/Release/net10.0 -EvidenceDirectory "$env:RUNNER_TEMP/jts-native-identity-evidence"
+          ./scripts/tests/run-native-identity-ci.ps1 -TestOutputDirectory ./tests/JTS.WindowsCompanion.Pairing.Tests/bin/Release/net10.0 -ExecutionTestOutputDirectory ./tests/JTS.WindowsCompanion.Execution.Tests/bin/Release/net10.0 -EvidenceDirectory "$env:RUNNER_TEMP/jts-native-identity-evidence"
       - name: Preserve native identity evidence
         if: always()
         uses: actions/upload-artifact@v4

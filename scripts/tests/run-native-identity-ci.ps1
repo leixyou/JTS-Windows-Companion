@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)][string] $TestOutputDirectory,
-    [Parameter(Mandatory = $true)][string] $EvidenceDirectory
+    [Parameter(Mandatory = $true)][string] $EvidenceDirectory,
+    [ValidateNotNullOrEmpty()][string] $ExecutionTestOutputDirectory
 )
 
 Set-StrictMode -Version Latest
@@ -19,6 +20,12 @@ $source = [IO.Path]::GetFullPath($TestOutputDirectory)
 $evidence = [IO.Path]::GetFullPath($EvidenceDirectory)
 $assemblyName = 'JTS.WindowsCompanion.Pairing.Tests.dll'
 if (-not (Test-Path -LiteralPath (Join-Path $source $assemblyName) -PathType Leaf)) { throw 'Build the Pairing tests first.' }
+$executionSource = $null
+$executionAssemblyName = 'JTS.WindowsCompanion.Execution.Tests.dll'
+if ($PSBoundParameters.ContainsKey('ExecutionTestOutputDirectory')) {
+    $executionSource = [IO.Path]::GetFullPath($ExecutionTestOutputDirectory)
+    if (-not (Test-Path -LiteralPath (Join-Path $executionSource $executionAssemblyName) -PathType Leaf)) { throw 'Build the Execution tests first.' }
+}
 if (Test-Path -LiteralPath $evidence) { throw 'Use a new evidence directory.' }
 $dotnet = (Get-Command dotnet -CommandType Application).Source
 $pwsh = (Get-Process -Id $PID).Path
@@ -63,13 +70,19 @@ try {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'run-native-identity-ci-child.ps1') -Destination $childScript
     $arguments = @('-NoLogo', '-NoProfile', '-NonInteractive', '-File', $childScript, '-ExpectedSid', $sid,
         '-Dotnet', $dotnet, '-TestAssembly', (Join-Path $stage $assemblyName), '-IdentityRoot', $identityRoot, '-ResultsRoot', $results)
+    if ($null -ne $executionSource) {
+        # Keep the net10 execution dependencies separate from the pairing test payload.
+        $executionStage = Join-Path $root 'execution-payload'; New-TestDirectory $executionStage $sid ReadAndExecute
+        Copy-Item -Path (Join-Path $executionSource '*') -Destination $executionStage -Recurse
+        $arguments += @('-ExecutionTestAssembly', (Join-Path $executionStage $executionAssemblyName))
+    }
     # Start-Process joins ArgumentList; quote every argument and reject command-line metacharacters in paths.
     foreach ($argument in $arguments) { if ($argument.Contains('"') -or $argument.Contains("`r") -or $argument.Contains("`n")) { throw 'Invalid child process argument.' } }
     $quoted = ($arguments | ForEach-Object { '"' + $_ + '"' }) -join ' '
     $credential = [Management.Automation.PSCredential]::new("$env:COMPUTERNAME\$name", $password)
     $process = Start-Process -FilePath $pwsh -ArgumentList $quoted -Credential $credential -LoadUserProfile -WorkingDirectory $stage -PassThru `
         -RedirectStandardOutput (Join-Path $results 'stdout.log') -RedirectStandardError (Join-Path $results 'stderr.log')
-    if (-not $process.WaitForExit(180000)) { throw 'Native identity tests exceeded their CI deadline.' }
+    if (-not $process.WaitForExit(180000)) { throw 'Native standard-account tests exceeded their CI deadline.' }
     $process.Refresh()
     if ($process.ExitCode -ne 0) { throw ('Native identity test process failed with exit code {0}.' -f $process.ExitCode) }
     $trx = Join-Path $results 'native-identity.trx'
@@ -83,6 +96,18 @@ try {
         if (@($cases | Where-Object { $_.testName.EndsWith('.' + $test, [StringComparison]::Ordinal) }).Count -ne 1) { throw 'Native identity TRX does not contain the exact expected tests.' }
     }
     Write-Output 'Native identity gate: four passed, zero failed, zero skipped under a disposable standard account.'
+    if ($null -ne $executionSource) {
+        $executionTrx = Join-Path $results 'native-execution.trx'
+        if (-not (Test-Path -LiteralPath $executionTrx -PathType Leaf)) { throw 'Native execution TRX was not produced.' }
+        [xml] $executionReport = [IO.File]::ReadAllText($executionTrx)
+        $executionCases = @($executionReport.SelectNodes("//*[local-name()='UnitTestResult']"))
+        $executionExpected = @('RealPowerShellPreservesUnicodeAndNonzeroExit', 'CancellationKillsOrdinaryChildBeforeTerminalReceipt')
+        if ($executionCases.Count -ne 2 -or @($executionCases | Where-Object { $_.outcome -cne 'Passed' }).Count -ne 0) { throw 'Native execution gate requires exactly two passing tests with no skips.' }
+        foreach ($test in $executionExpected) {
+            if (@($executionCases | Where-Object { $_.testName -ceq ('JTS.WindowsCompanion.Execution.Tests.WindowsProcessAcceptanceTests.' + $test) }).Count -ne 1) { throw 'Native execution TRX does not contain the exact expected tests.' }
+        }
+        Write-Output 'Native execution gate: two passed, zero failed, zero skipped under the same disposable standard account.'
+    }
 } catch { $failure = $_ }
 finally {
     if ($null -ne $process) {
@@ -92,11 +117,11 @@ finally {
     }
     try {
         New-Item -ItemType Directory -Path $evidence | Out-Null
-        foreach ($file in @('stdout.log', 'stderr.log', 'native-identity.trx')) {
+        foreach ($file in @('stdout.log', 'stderr.log', 'native-identity.trx', 'native-execution.trx')) {
             $path = Join-Path $results $file
             if (Test-Path -LiteralPath $path -PathType Leaf) {
                 Copy-Item -LiteralPath $path -Destination (Join-Path $evidence $file)
-                if ($file -ne 'native-identity.trx') { Get-Content -LiteralPath $path | Write-Output }
+                if ($file -in @('stdout.log', 'stderr.log')) { Get-Content -LiteralPath $path | Write-Output }
             }
         }
     } catch { $cleanupErrors.Add('Evidence preservation failed.') }
