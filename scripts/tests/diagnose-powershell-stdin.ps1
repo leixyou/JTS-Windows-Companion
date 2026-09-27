@@ -24,6 +24,21 @@ $variants = @(
     @{Name='command-console-restricted'; Encoded=$false; Restricted=$true; AsyncClose=$true; Relative=$true; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole},
     @{Name='command-console-restricted-no-module'; Encoded=$false; Restricted=$true; AsyncClose=$true; Relative=$true; Body=('$ProgressPreference=''SilentlyContinue'';' + $prefix.Replace('New-Object System.Text.UTF8Encoding($false)', '[Text.UTF8Encoding]::new($false)') + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole)}
 )
+# Vary only named operating-system metadata. Never inherit arbitrary process environment
+# or PowerShell policy variables, and never print inherited values.
+$environmentGroups = @{
+    'system-drive' = @('SystemDrive')
+    'platform' = @('SystemDrive','OS','NUMBER_OF_PROCESSORS','PROCESSOR_ARCHITECTURE')
+    'program-directories' = @('ProgramFiles','ProgramFiles(x86)','ProgramW6432','CommonProgramFiles','CommonProgramFiles(x86)','CommonProgramW6432')
+    'program-data' = @('ProgramData','ALLUSERSPROFILE','PUBLIC')
+    'user-directories' = @('HOMEDRIVE','HOMEPATH','USERNAME','USERDOMAIN')
+}
+$allNames = @($environmentGroups.Values | ForEach-Object { $_ } | Sort-Object -Unique)
+$environmentGroups['combined'] = $allNames
+foreach ($group in $environmentGroups.Keys | Sort-Object) {
+    $variants += @{Name='restricted-extra-' + $group; Encoded=$false; Restricted=$true; ExtraEnvironment=$environmentGroups[$group];
+        AsyncClose=$true; Relative=$true; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole}
+}
 foreach ($variant in $variants) {
     $start = [Diagnostics.ProcessStartInfo]::new()
     $start.FileName = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
@@ -37,6 +52,10 @@ foreach ($variant in $variants) {
     if ($variant.Restricted) {
         $inherited = @{}
         foreach ($name in @('SystemRoot','WINDIR','TEMP','TMP','PATH','PATHEXT','COMSPEC','USERPROFILE','LOCALAPPDATA','APPDATA')) {
+            $value = [Environment]::GetEnvironmentVariable($name)
+            if ($null -ne $value) { $inherited[$name] = $value }
+        }
+        foreach ($name in $variant.ExtraEnvironment) {
             $value = [Environment]::GetEnvironmentVariable($name)
             if ($null -ne $value) { $inherited[$name] = $value }
         }
