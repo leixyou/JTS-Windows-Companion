@@ -68,6 +68,7 @@ The unattended preview implements first installation. Upgrade, uninstall and aut
 - [Relay/Authority development modules](README.Next.md)
 - [Elevation and managed execution](docs/ELEVATION_AND_MANAGED_MODE.md)
 - [Windows QA checklist](docs/REAL_WINDOWS_QA_RUNBOOK.md)
+- [Optional Mac/.NET transport interoperability fixture](tests/MacInteropHost/README.md)
 - [Contribution guide](CONTRIBUTING.md), [security reporting](SECURITY.md) and [third-party notices](THIRD-PARTY-NOTICES.md)
 
 ## License
