@@ -27,10 +27,14 @@ internal sealed class EnrollmentFixture : IDisposable
     internal Action<string>? Checkpoint;
     internal Func<string, Guid, CancellationToken, ValueTask>? Activation;
     internal int ActivationCalls;
+    internal readonly FakeRevocationRelay Revocations = new();
+    internal Func<string, CancellationToken, ValueTask>? Drain;
+    internal int DrainCalls;
+    private readonly bool _mailbox;
     internal string Path => System.IO.Path.Combine(DirectoryPath, "enrollment.sealed");
-    internal EnrollmentFixture()
+    internal EnrollmentFixture(bool mailbox = false)
     {
-        Directory.CreateDirectory(DirectoryPath);
+        _mailbox = mailbox; Directory.CreateDirectory(DirectoryPath);
         using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
         _certificate = new CertificateRequest("CN=Enrollment Fixture", key, HashAlgorithmName.SHA256).CreateSelfSigned(Clock.Now.AddDays(-1), Clock.Now.AddYears(2));
         Identity = new(_certificate); Spki = Convert.ToBase64String(key.ExportSubjectPublicKeyInfo());
@@ -48,11 +52,26 @@ internal sealed class EnrollmentFixture : IDisposable
         Coordinator = Open();
     }
     private EnrollmentCoordinator Open() => new(Path, "https://relay.example.test", Spki, Identity, _protector, p => { }, Pairings, Grants,
-        Pairings.RevokeAsync, Grants.RevokeAsync, ActivateAsync, Relay, Clock, name => Checkpoint?.Invoke(name));
+        Pairings.RevokeAsync, Grants.RevokeAsync, ActivateAsync, Relay, Clock, name => Checkpoint?.Invoke(name), _mailbox ? Revocations : null, DrainAsync);
     private ValueTask ActivateAsync(string owner, Guid pairingId, CancellationToken token)
     { ActivationCalls++; return Activation?.Invoke(owner, pairingId, token) ?? ValueTask.CompletedTask; }
+    private ValueTask DrainAsync(string owner, CancellationToken token)
+    { DrainCalls++; return Drain?.Invoke(owner, token) ?? ValueTask.CompletedTask; }
+    internal RevocationRequest RevokeRequest() => Sign(new RevocationRequest(2, Guid.NewGuid().ToString("D"), "https://relay.example.test",
+        Request.ControllerDeviceID, Identity.DeviceId, Request.PairingID.ToString("D"), Request.GrantID.ToString("D"),
+        Request.FileGrantID.ToString("D"), Request.RdpGrantID.ToString("D"), Clock.Now.ToUnixTimeSeconds(), ""));
+    internal RevocationRequest Sign(RevocationRequest request) => request with { SignatureBase64 = Convert.ToBase64String(_controller.SignData(
+        request.Transcript(), HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation)) };
+    internal void Deliver(RevocationRequest request) => Revocations.Pending.Add(new(request, Request.ControllerSPKIBase64));
     internal void Restart() { Coordinator.Dispose(); Coordinator = Open(); }
-    internal void Confirm() => Relay.Receipt = Relay.Receipt with { State = "bound" };
+    internal void Confirm()
+    {
+        var r = Relay.Receipt;
+        var c = new EnrollmentConfirmation(2, "https://relay.example.test", r.InvitationId.ToString("D"), r.ControllerDeviceId,
+            Identity.DeviceId, r.Claim!.ClaimHash, Clock.Now.ToUnixTimeSeconds(), Request.ExpiresAtUtc.ToUnixTimeSeconds(), "");
+        c = c with { SignatureBase64 = Convert.ToBase64String(_controller.SignData(c.Transcript(), HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation)) };
+        Relay.Receipt = r with { State = "bound", Confirmation = c };
+    }
     public void Dispose()
     { Coordinator.Dispose(); Pairings.Dispose(); Grants.Dispose(); _certificate.Dispose(); _controller.Dispose(); _protector.Dispose(); Directory.Delete(DirectoryPath, true); }
 }

@@ -10,7 +10,7 @@ namespace JTS.WindowsCompanion.Enrollment;
 public sealed record EnrollmentManagementStatus(string State, string DeviceId, string RelayOrigin, Guid? InvitationId, string? ErrorCode);
 
 /// <summary>Authority-owned durable enrollment. Network claims never mutate trust before a bound receipt.</summary>
-public sealed class EnrollmentCoordinator : IDisposable
+public sealed partial class EnrollmentCoordinator : IDisposable
 {
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly EnrollmentAttemptStore _store;
@@ -27,20 +27,32 @@ public sealed class EnrollmentCoordinator : IDisposable
     public EnrollmentCoordinator(string path, string relayOrigin, string spki, RelayEndpointIdentity identity, ITaskPayloadProtector protector,
         Action<string> checkPath, DurableRelayPairingStore pairings, DurableControlGrantStore grants,
         Func<string, Guid, CancellationToken, ValueTask> revokePairing, Func<string, Guid, CancellationToken, ValueTask> revokeGrant,
-        Func<string, Guid, CancellationToken, ValueTask> activatePairing)
+        Func<string, Guid, CancellationToken, ValueTask> activatePairing,
+        RelayControlClient? managementRelay = null, Func<string, CancellationToken, ValueTask>? drainPeer = null)
         : this(path, relayOrigin, spki, identity, protector, checkPath, pairings, grants, revokePairing, revokeGrant, activatePairing,
-            new EnrollmentRelayClient(new Uri(relayOrigin)), TimeProvider.System) { }
+            new EnrollmentRelayClient(new Uri(relayOrigin)), TimeProvider.System, null,
+            managementRelay is null ? null : new RevocationRelayClient(managementRelay), drainPeer) { }
     internal EnrollmentCoordinator(string path, string relayOrigin, string spki, RelayEndpointIdentity identity, ITaskPayloadProtector protector,
         Action<string> checkPath, DurableRelayPairingStore pairings, DurableControlGrantStore grants,
         Func<string, Guid, CancellationToken, ValueTask> revokePairing, Func<string, Guid, CancellationToken, ValueTask> revokeGrant,
         Func<string, Guid, CancellationToken, ValueTask> activatePairing,
-        IEnrollmentRelay relay, TimeProvider clock, Action<string>? checkpoint = null)
+        IEnrollmentRelay relay, TimeProvider clock, Action<string>? checkpoint = null,
+        IRevocationRelay? revocations = null, Func<string, CancellationToken, ValueTask>? drainPeer = null)
     {
         _origin = EnrollmentCode.CanonicalOrigin(relayOrigin); _spki = spki; _identity = identity;
         if (EnrollmentCrypto.Hash(EnrollmentCrypto.Base64(spki, 512)) != identity.DeviceId || pairings.LocalDeviceId != identity.DeviceId)
             throw new EnrollmentException("ENROLLMENT_IDENTITY_MISMATCH");
         _store = new(path, identity.DeviceId, protector, checkPath); _pairings = pairings; _grants = grants; _relay = relay; _clock = clock;
-        _revokePairing = revokePairing; _revokeGrant = revokeGrant; _activatePairing = activatePairing; _checkpoint = checkpoint;
+        _revokePairing = revokePairing; _revokeGrant = revokeGrant; _activatePairing = activatePairing; _checkpoint = checkpoint; _drainPeer = drainPeer;
+        if (revocations is not null)
+        {
+            try
+            {
+                if (drainPeer is null) throw new ArgumentException("Revocation completion requires an executor drain callback.");
+                _revocations = new(path + ".revocations", _origin, identity, protector, checkPath, revocations, clock, ApplyRemoteRevocationAsync);
+            }
+            catch { _store.Dispose(); _gate.Dispose(); throw; }
+        }
     }
     public async Task<EnrollmentManagementStatus> StatusAsync(CancellationToken token = default)
     { await _gate.WaitAsync(token).ConfigureAwait(false); try { return Status(); } finally { _gate.Release(); } }
@@ -95,6 +107,8 @@ public sealed class EnrollmentCoordinator : IDisposable
     }
     internal async Task StepAsync(CancellationToken token = default)
     {
+        // Polling an untrusted/offline mailbox must not hold the local management gate.
+        if (_revocations is not null) await _revocations.StepAsync(token).ConfigureAwait(false);
         await _gate.WaitAsync(token).ConfigureAwait(false);
         try
         {
@@ -107,10 +121,11 @@ public sealed class EnrollmentCoordinator : IDisposable
                     await AdvanceAsync(attempt, token).ConfigureAwait(false);
                 }
                 catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
-                catch (TimeoutException) when (_store.Attempts.Single(a => a.InvitationId == attempt.InvitationId).State == "committing")
+                catch (TimeoutException) when (_store.Attempts.Single(a => a.InvitationId == attempt.InvitationId).State is "committing" or "revoking")
                 {
                     var latest = _store.Attempts.Single(a => a.InvitationId == attempt.InvitationId);
-                    if (latest.ErrorCode != "ENROLLMENT_ACTIVATION_PENDING") _store.Save(latest with { ErrorCode = "ENROLLMENT_ACTIVATION_PENDING" });
+                    var pending = latest.State == "revoking" ? "ENROLLMENT_REVOCATION_PENDING" : "ENROLLMENT_ACTIVATION_PENDING";
+                    if (latest.ErrorCode != pending) _store.Save(latest with { ErrorCode = pending });
                 }
                 catch (Exception e) when (e is HttpRequestException or OperationCanceledException)
                 {
@@ -164,13 +179,13 @@ public sealed class EnrollmentCoordinator : IDisposable
             _store.Save(a); _checkpoint?.Invoke("response-persisted"); // Retry must reuse exactly this ciphertext and signature.
         }
         else VerifyReceipt(a, receipt);
-        if (receipt.State == "bound") { await AuthorizeCommitAsync(a, token).ConfigureAwait(false); return; }
+        if (receipt.State == "bound") { await AuthorizeCommitAsync(a, receipt.Confirmation, token).ConfigureAwait(false); return; }
         // Expiry may not suppress a receipt lookup: a prior confirm can already have committed while its response was lost.
         if (receipt.ExpiresAtUnixSeconds <= _clock.GetUtcNow().ToUnixTimeSeconds())
         { _store.Save(a with { State = "expired", SecretBase64 = "", ErrorCode = null }); return; }
         var claimed = await _relay.ExchangeAsync("claim", a, _spki, token).ConfigureAwait(false);
         VerifyReceipt(a, claimed);
-        if (claimed.State == "bound") { await AuthorizeCommitAsync(a, token).ConfigureAwait(false); return; }
+        if (claimed.State == "bound") { await AuthorizeCommitAsync(a, claimed.Confirmation, token).ConfigureAwait(false); return; }
         if (claimed.State != "claimed") throw new EnrollmentException("ENROLLMENT_RECEIPT_MISMATCH");
         _store.Save(a with { State = "claimed", ErrorCode = null });
     }
@@ -184,9 +199,11 @@ public sealed class EnrollmentCoordinator : IDisposable
                 || claim.SignatureBase64 != a.SignatureBase64 || claim.ClaimHash != a.ClaimHash) throw new EnrollmentException("ENROLLMENT_RECEIPT_MISMATCH");
         }
     }
-    private async Task AuthorizeCommitAsync(EnrollmentAttempt a, CancellationToken token)
+    private async Task AuthorizeCommitAsync(EnrollmentAttempt a, EnrollmentConfirmation? confirmation, CancellationToken token)
     {
-        a = a with { State = "committing", ErrorCode = null }; _store.Save(a); _checkpoint?.Invoke("commit-authorized"); await CommitAsync(a, token).ConfigureAwait(false);
+        if (confirmation is null) throw new EnrollmentException("ENROLLMENT_CONFIRMATION_REQUIRED");
+        confirmation.Verify(a, VerifiedRequest(a), _identity.DeviceId, _clock);
+        a = a with { State = "committing", ErrorCode = null, Confirmation = confirmation }; _store.Save(a); _checkpoint?.Invoke("commit-authorized"); await CommitAsync(a, token).ConfigureAwait(false);
     }
     private RelayDelegatedEnrollment VerifiedRequest(EnrollmentAttempt a)
     {
@@ -197,6 +214,8 @@ public sealed class EnrollmentCoordinator : IDisposable
     private async Task CommitAsync(EnrollmentAttempt a, CancellationToken token)
     {
         var request = VerifiedRequest(a);
+        if (a.Confirmation is null) throw new EnrollmentException("ENROLLMENT_CONFIRMATION_REQUIRED");
+        a.Confirmation.Verify(a, request, _identity.DeviceId, _clock);
         _grants.ApproveLocally(new(request.ControllerDeviceID, request.GrantID, DateTimeOffset.MaxValue,
             Enum.GetValues<ControlOperation>(), ["powershell.v1"], allowDisconnected: true));
         _checkpoint?.Invoke("grant-persisted");
@@ -211,8 +230,9 @@ public sealed class EnrollmentCoordinator : IDisposable
         var request = VerifiedRequest(a);
         await _revokePairing(request.ControllerDeviceID, request.PairingID, CancellationToken.None).ConfigureAwait(false);
         await _revokeGrant(request.ControllerDeviceID, request.GrantID, CancellationToken.None).ConfigureAwait(false);
+        if (_drainPeer is not null) await _drainPeer(request.ControllerDeviceID, CancellationToken.None).ConfigureAwait(false);
         _store.Save(a with { State = "revoked", SecretBase64 = "", ErrorCode = null });
     }
-    public void Dispose() { _store.Dispose(); if (_relay is IDisposable d) d.Dispose(); _gate.Dispose(); }
+    public void Dispose() { _revocations?.Dispose(); _store.Dispose(); if (_relay is IDisposable d) d.Dispose(); _gate.Dispose(); }
     private sealed class FixedTime(DateTimeOffset now) : TimeProvider { public override DateTimeOffset GetUtcNow() => now; }
 }

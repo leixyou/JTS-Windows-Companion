@@ -183,9 +183,13 @@ public sealed class RelayControlClient : IDisposable
         catch { socket.Dispose(); throw; }
     }
 
+    /// <summary>Authenticated revocation mailbox only; endpoint authorization comes from independently verified signed messages.</summary>
+    public Task<JsonDocument> ExchangeRevocationsAsync(object payload, CancellationToken token = default)
+        => AuthenticateAsync("revocations", payload, token);
+
     internal async Task<JsonDocument> AuthenticateAsync(string operation, object payload, CancellationToken cancellationToken)
     {
-        if (operation is not ("presence" or "devices" or "sessions" or "poll"))
+        if (operation is not ("presence" or "devices" or "sessions" or "poll" or "revocations"))
             throw new ArgumentException("Unsupported relay operation.", nameof(operation));
         using var deadline = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         deadline.CancelAfter(TimeSpan.FromSeconds(20));
@@ -204,25 +208,25 @@ public sealed class RelayControlClient : IDisposable
         if (nonceBytes.Length != 32 || Convert.ToBase64String(nonceBytes) != nonce)
             throw new RelayProtocolException("RELAY_CHALLENGE_INVALID");
         var signature = _identity.Sign(Encoding.UTF8.GetBytes(string.Join('\n',
-            "JTS-RELAY-AUTH-V1", _identity.DeviceId, operation, id, nonce, RelayWire.Hash(payloadBytes))));
+            "JTS-RELAY-AUTH-V2", _origin.GetLeftPart(UriPartial.Authority).ToLowerInvariant(), _identity.DeviceId, operation, id, nonce, RelayWire.Hash(payloadBytes))));
         return await PostAsync("v1/" + operation, new
         {
             deviceId = _identity.DeviceId, challengeId = id,
             payloadBase64 = Convert.ToBase64String(payloadBytes), signatureBase64 = Convert.ToBase64String(signature),
-        }, deadline.Token).ConfigureAwait(false);
+        }, deadline.Token, operation == "revocations" ? 65536 : RelayWire.MaximumHttpBytes).ConfigureAwait(false);
     }
 
-    private async Task<JsonDocument> PostAsync(string path, object body, CancellationToken token)
+    private async Task<JsonDocument> PostAsync(string path, object body, CancellationToken token, int maximumBytes = RelayWire.MaximumHttpBytes)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, path) { Content = JsonContent.Create(body) };
         using var response = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, token).ConfigureAwait(false);
-        return await ReadResponseAsync(response, token).ConfigureAwait(false);
+        return await ReadResponseAsync(response, token, maximumBytes).ConfigureAwait(false);
     }
 
-    private static async Task<JsonDocument> ReadResponseAsync(HttpResponseMessage response, CancellationToken token)
+    private static async Task<JsonDocument> ReadResponseAsync(HttpResponseMessage response, CancellationToken token, int maximumBytes = RelayWire.MaximumHttpBytes)
     {
         if (!response.IsSuccessStatusCode) throw new RelayProtocolException("RELAY_HTTP_" + (int)response.StatusCode);
-        if (response.Content.Headers.ContentLength > RelayWire.MaximumHttpBytes)
+        if (response.Content.Headers.ContentLength > maximumBytes)
             throw new RelayProtocolException("RELAY_RESPONSE_LIMIT");
         await using var stream = await response.Content.ReadAsStreamAsync(token).ConfigureAwait(false);
         using var bytes = new MemoryStream();
@@ -231,7 +235,7 @@ public sealed class RelayControlClient : IDisposable
         {
             var count = await stream.ReadAsync(buffer, token).ConfigureAwait(false);
             if (count == 0) break;
-            if (bytes.Length + count > RelayWire.MaximumHttpBytes) throw new RelayProtocolException("RELAY_RESPONSE_LIMIT");
+            if (bytes.Length + count > maximumBytes) throw new RelayProtocolException("RELAY_RESPONSE_LIMIT");
             bytes.Write(buffer, 0, count);
         }
         return RelayWire.Parse(bytes.ToArray());

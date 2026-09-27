@@ -35,9 +35,13 @@ public sealed class RelayControlClientTests
             var signature = Convert.FromBase64String(json.RootElement.GetProperty("signatureBase64").GetString()!);
             Assert.Equal(64, signature.Length);
             using var key = certificate.GetECDsaPublicKey()!;
-            var expected = Encoding.UTF8.GetBytes(string.Join('\n', "JTS-RELAY-AUTH-V1", identity.DeviceId,
+            var expected = Encoding.UTF8.GetBytes(string.Join('\n', "JTS-RELAY-AUTH-V2", "https://relay.example", identity.DeviceId,
                 "presence", challengeId, nonce, RelayWire.Hash(payload)));
             Assert.True(key.VerifyData(expected, signature, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation));
+            var otherOrigin = Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(expected).Replace("https://relay.example", "https://other.example"));
+            Assert.False(key.VerifyData(otherOrigin, signature, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation));
+            var legacy = Encoding.UTF8.GetBytes(string.Join('\n', "JTS-RELAY-AUTH-V1", identity.DeviceId, "presence", challengeId, nonce, RelayWire.Hash(payload)));
+            Assert.False(key.VerifyData(legacy, signature, HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation));
             return Json(new { deviceId = identity.DeviceId });
         });
         using var client = new RelayControlClient(new Uri("https://relay.example/"), identity, handler, TimeProvider.System);

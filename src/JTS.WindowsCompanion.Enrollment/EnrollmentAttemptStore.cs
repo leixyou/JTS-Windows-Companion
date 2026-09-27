@@ -9,7 +9,7 @@ namespace JTS.WindowsCompanion.Enrollment;
 internal sealed record EnrollmentAttempt(Guid InvitationId, string RelayOrigin, string SecretBase64, string State,
     DateTimeOffset CreatedAt, string? OfferBase64 = null, string? RequestBase64 = null, string? RequestSha256 = null,
     string? ControllerDeviceId = null, string? ResponseBase64 = null, string? SignatureBase64 = null, string? ClaimHash = null,
-    long? ExpiresAtUnixSeconds = null, DateTimeOffset? VerifiedAt = null, string? ErrorCode = null)
+    long? ExpiresAtUnixSeconds = null, DateTimeOffset? VerifiedAt = null, string? ErrorCode = null, EnrollmentConfirmation? Confirmation = null)
 {
     internal EnrollmentCode OpenCode() => new(RelayOrigin, InvitationId, EnrollmentCrypto.Base64(SecretBase64, 32));
     public override string ToString() => $"EnrollmentAttempt ({State}; secret omitted)";

@@ -39,7 +39,11 @@ be added without changing the local Windows identity.
    before claim submission. Retries after lost responses reuse those same bytes.
 3. `claimed` means the Mac still needs to verify and confirm the response. Windows
    has not activated any grants or lanes.
-4. A matching `bound` receipt authorizes a durable local commit journal. Control
+4. A `bound` receipt must carry the Mac's P-256 signed v2 confirmation, binding
+   the exact relay origin, invitation, both device identities, claim hash and
+   original import window. The Authority verifies this signature independently;
+   a relay-supplied state string cannot authorize a commit. The signed confirmation
+   is saved in the durable local commit journal and checked again on recovery. Control
    grants are persisted first and the pairing last; this prevents partial grants
    from authorizing business channels. A crash at either boundary resumes the
    same idempotent commit, even after the original code's import window expires.
@@ -57,10 +61,21 @@ history. State is under the existing protected authority directory as
 `enrollment-attempts.sealed`; plaintext codes and private identity material are
 never exported. Corrupt authenticated state is not silently reset.
 
-Revocation journals its intent before revoking the pairing and control capability;
-active sessions/tasks are stopped through the existing control host. Reboot does
-not restore a revoked epoch. Node admission and the Mac's local binding have their
-own matching revocation operations.
+Remote revocation uses an authenticated signed mailbox, independently of RDP or
+an active control stream. The Mac signs the exact relay origin, both identities,
+pairing epoch and all three capability IDs. Windows checks the controller key
+against its saved identity, seals the request before applying it, tombstones the
+pairing and control grant, cancels detached and queued tasks, then waits for
+sessions and the active executor to drain. Only then does it persist and send a
+Windows-signed completion receipt. Lost replies retry the same saved receipt;
+offline requests remain pending. Reboot does not restore a revoked epoch. A
+late old-epoch request cannot stop a newer pairing. The Mac may report confirmed
+revocation only after verifying the matching Windows receipt.
+
+All signed relay HTTP operations use authentication v2 with the canonical relay
+origin in the signature transcript. There is no v1 fallback. Upgrading endpoints
+and a node therefore requires a coordinated v2 rollout; a v1 node is not accepted
+as a security-compatible carrier.
 
 ## Local management boundary
 

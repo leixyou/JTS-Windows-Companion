@@ -5,7 +5,7 @@ namespace JTS.WindowsCompanion.Enrollment;
 
 internal sealed record EnrollmentClaim(string PeerSPKIBase64, string ResponseBase64, string SignatureBase64, string ClaimHash);
 internal sealed record EnrollmentReceipt(Guid InvitationId, string ControllerDeviceId, string State, long ExpiresAtUnixSeconds,
-    string OfferBase64, EnrollmentClaim? Claim);
+    string OfferBase64, EnrollmentClaim? Claim, EnrollmentConfirmation? Confirmation = null);
 
 internal interface IEnrollmentRelay
 {
@@ -63,8 +63,10 @@ internal sealed class EnrollmentRelayClient : IEnrollmentRelay, IDisposable
         try
         {
             using var doc = JsonDocument.Parse(bytes); var p = doc.RootElement; var hasClaim = p.TryGetProperty("claim", out var claim);
-            EnrollmentCrypto.Fields(p, hasClaim ? ["invitationId", "controllerDeviceId", "state", "expiresAtUnixSeconds", "offerBase64", "claim"]
-                : ["invitationId", "controllerDeviceId", "state", "expiresAtUnixSeconds", "offerBase64"]);
+            var hasConfirmation = p.TryGetProperty("confirmation", out var confirmation);
+            var fields = new List<string> { "invitationId", "controllerDeviceId", "state", "expiresAtUnixSeconds", "offerBase64" };
+            if (hasClaim) fields.Add("claim"); if (hasConfirmation) fields.Add("confirmation");
+            EnrollmentCrypto.Fields(p, fields.ToArray());
             var idString = p.GetProperty("invitationId").GetString()!;
             if (!Guid.TryParseExact(idString, "D", out var id) || id == Guid.Empty || id.ToString("D") != idString) throw Invalid();
             var controller = p.GetProperty("controllerDeviceId").GetString()!;
@@ -85,7 +87,9 @@ internal sealed class EnrollmentRelayClient : IEnrollmentRelay, IDisposable
             }
             if (state is "claimed" or "bound" && value is null) throw Invalid();
             if (state == "pending" && value is not null) throw Invalid();
-            return new(id, controller, state, expiry, offer, value);
+            var signed = hasConfirmation ? EnrollmentConfirmation.Parse(confirmation) : null;
+            if (state == "bound" && signed is null || state is not ("bound" or "cancelled") && signed is not null) throw Invalid();
+            return new(id, controller, state, expiry, offer, value, signed);
         }
         catch (Exception e) when (e is JsonException or InvalidOperationException or KeyNotFoundException or FormatException or NullReferenceException) { throw Invalid(); }
     }

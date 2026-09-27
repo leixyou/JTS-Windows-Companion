@@ -33,7 +33,7 @@ jobs:
             throw 'Packaging restore changed or created an uncommitted dependency lock.'
           }
       - run: dotnet test tests/JTS.WindowsCompanion.Control.Tests --configuration Release --no-build
-      - run: dotnet test tests/JTS.WindowsCompanion.Runtime.Tests --configuration Release --no-build --filter FullyQualifiedName~OwnerReactivationTests
+      - run: dotnet test tests/JTS.WindowsCompanion.Runtime.Tests --configuration Release --no-build --filter "FullyQualifiedName~OwnerReactivationTests|FullyQualifiedName~OwnerRevocationDrainTests"
       - run: dotnet test tests/JTS.WindowsCompanion.Relay.Tests --configuration Release --no-build
       - run: dotnet test tests/JTS.WindowsCompanion.UnattendedInstallation.Tests --configuration Release --no-build
       - run: dotnet test tests/JTS.WindowsCompanion.Enrollment.Tests --configuration Release --no-build

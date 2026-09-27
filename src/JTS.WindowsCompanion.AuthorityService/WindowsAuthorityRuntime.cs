@@ -58,7 +58,7 @@ internal static class WindowsAuthorityRuntime
                 waitForRelayAdmission: true);
             var enrollment = new EnrollmentCoordinator(State("enrollment-attempts.sealed"), config.RelayOrigin.AbsoluteUri,
                 identity.Description.PublicKeySpkiBase64, identity.Identity, protector, p => { WindowsProtectedDataPath.Require(p, account); },
-                pairings, grants, service.RevokePairingAsync, service.RevokeGrantDurablyAsync, service.ActivatePairingAsync);
+                pairings, grants, service.RevokePairingAsync, service.RevokeGrantDurablyAsync, service.ActivatePairingAsync, relay, service.DrainRevokedPeerAsync);
             resources.Add(enrollment);
             var management = new WindowsEnrollmentManagementServer(account, enrollment);
             return AuthorityRuntime.Own(service, identity.Description.CertificateExpiresAt, resources, enrollment.RunAsync, management.RunAsync);

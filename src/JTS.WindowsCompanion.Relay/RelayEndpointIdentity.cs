@@ -40,6 +40,18 @@ public sealed class RelayEndpointIdentity
         return Sign(transcript);
     }
 
+    /// <summary>Signs an exact, durable revocation completion. Does not expose a general signing RPC.</summary>
+    public byte[] SignRevocationReceipt(ReadOnlySpan<byte> transcript)
+    {
+        if (transcript.Length is < 100 or > 512) throw new RelayProtocolException("REVOCATION_TRANSCRIPT_INVALID");
+        var f = System.Text.Encoding.UTF8.GetString(transcript).Split('\n');
+        if (f.Length != 6 || f[0] != "JTS-PAIR-REVOKED-2" || !Guid.TryParseExact(f[1], "D", out var id)
+            || id == Guid.Empty || id.ToString("D") != f[1] || f.Skip(2).Take(3).Any(s => !RelayWire.IsDeviceId(s))
+            || f[4] != DeviceId || !long.TryParse(f[5], out var seconds) || seconds is < 1 or > 253402300799)
+            throw new RelayProtocolException("REVOCATION_TRANSCRIPT_INVALID");
+        return Sign(transcript);
+    }
+
     internal static string CertificateDeviceId(X509Certificate2 certificate)
     {
         using var key = certificate.GetECDsaPublicKey()
