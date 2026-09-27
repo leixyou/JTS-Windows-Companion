@@ -8,7 +8,8 @@ param(
 )
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-$current = [Security.Principal.WindowsIdentity]::GetCurrent([Security.Principal.TokenAccessLevels]::Query)
+# WindowsPrincipal.IsInRole duplicates this handle while checking the effective groups.
+$current = [Security.Principal.WindowsIdentity]::GetCurrent()
 try {
     if ($current.User.Value -cne $ExpectedSid -or $current.ImpersonationLevel -ne [Security.Principal.TokenImpersonationLevel]::None -or
         ([Security.Principal.WindowsPrincipal]::new($current)).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
