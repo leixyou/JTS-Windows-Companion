@@ -8,6 +8,8 @@
     <FileVersion>2.5.0.0</FileVersion>
     <InformationalVersion>2.5.0-preview</InformationalVersion>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <!-- The restore CLI runtime option sets RuntimeIdentifiers; prevent SelfContained from also inferring the build host RID. -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <NuGetLockFilePath>$(MSBuildThisFileDirectory)packaging/next-locks/$(MSBuildProjectName).lock.json</NuGetLockFilePath>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
