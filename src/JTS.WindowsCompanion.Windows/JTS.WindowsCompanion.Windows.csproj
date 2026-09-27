@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>JTS.WindowsCompanion</RootNamespace>
+    <AssemblyName>JTS.WindowsCompanion.Windows</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <DefineConstants>$(DefineConstants);WINDOWS_UIA</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JTS.WindowsCompanion.Core\JTS.WindowsCompanion.Core.csproj" />
+  </ItemGroup>
+</Project>

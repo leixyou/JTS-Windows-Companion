@@ -1,0 +1,28 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/JTS.WindowsCompanion.Relay/JTS.WindowsCompanion.Relay.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.Runtime/JTS.WindowsCompanion.Runtime.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.Pairing/JTS.WindowsCompanion.Pairing.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.Control/JTS.WindowsCompanion.Control.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.Execution/JTS.WindowsCompanion.Execution.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.WorkerIpc/JTS.WindowsCompanion.WorkerIpc.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.WorkerRunner/JTS.WindowsCompanion.WorkerRunner.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.WorkerService/JTS.WindowsCompanion.WorkerService.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.AuthorityService/JTS.WindowsCompanion.AuthorityService.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.AuthorityProvisioner/JTS.WindowsCompanion.AuthorityProvisioner.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.UnattendedInstallation/JTS.WindowsCompanion.UnattendedInstallation.csproj" />
+    <Project Path="src/JTS.WindowsCompanion.UnattendedSetup/JTS.WindowsCompanion.UnattendedSetup.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/JTS.WindowsCompanion.Relay.Tests/JTS.WindowsCompanion.Relay.Tests.csproj" />
+    <Project Path="tests/JTS.WindowsCompanion.Runtime.Tests/JTS.WindowsCompanion.Runtime.Tests.csproj" />
+    <Project Path="tests/JTS.WindowsCompanion.Pairing.Tests/JTS.WindowsCompanion.Pairing.Tests.csproj" />
+    <Project Path="tests/JTS.WindowsCompanion.Control.Tests/JTS.WindowsCompanion.Control.Tests.csproj" />
+    <Project Path="tests/JTS.WindowsCompanion.Execution.Tests/JTS.WindowsCompanion.Execution.Tests.csproj" />
+    <Project Path="tests/JTS.WindowsCompanion.WorkerIpc.Tests/JTS.WindowsCompanion.WorkerIpc.Tests.csproj" />
+    <Project Path="tests/JTS.WindowsCompanion.WorkerService.Tests/JTS.WindowsCompanion.WorkerService.Tests.csproj" />
+    <Project Path="tests/JTS.WindowsCompanion.AuthorityService.Tests/JTS.WindowsCompanion.AuthorityService.Tests.csproj" />
+    <Project Path="tests/JTS.WindowsCompanion.AuthorityProvisioner.Tests/JTS.WindowsCompanion.AuthorityProvisioner.Tests.csproj" />
+    <Project Path="tests/JTS.WindowsCompanion.UnattendedInstallation.Tests/JTS.WindowsCompanion.UnattendedInstallation.Tests.csproj" />
+  </Folder>
+</Solution>

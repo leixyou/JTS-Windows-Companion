@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>JTS.WindowsCompanion.Setup</RootNamespace>
+    <AssemblyName>JTS.WindowsCompanion.Installation</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JTS.WindowsCompanion.Core\JTS.WindowsCompanion.Core.csproj" />
+  </ItemGroup>
+</Project>

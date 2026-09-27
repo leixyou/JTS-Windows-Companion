@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <UseWindowsForms>true</UseWindowsForms>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+    <IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
+    <PublishTrimmed>false</PublishTrimmed>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RootNamespace>JTS.WindowsCompanion.UnattendedSetup</RootNamespace>
+    <AssemblyName>JTS.WindowsCompanion.UnattendedSetup</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <VersionPrefix>2.5.0</VersionPrefix>
+    <AssemblyVersion>2.5.0.0</AssemblyVersion>
+    <FileVersion>2.5.0.0</FileVersion>
+    <InformationalVersion>2.5.0-preview</InformationalVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../JTS.WindowsCompanion.UnattendedInstallation/JTS.WindowsCompanion.UnattendedInstallation.csproj" />
+  </ItemGroup>
+  <Target Name="RequireEmbeddedCompanionReleaseKey" BeforeTargets="Publish">
+    <Error Condition="'$(CompanionReleasePublicKeyPath)' == '' Or !Exists('$(CompanionReleasePublicKeyPath)')"
+           Text="CompanionReleasePublicKeyPath must reference the P-256 public release key embedded in Core at build time." />
+    <Error Condition="'$(RuntimeIdentifier)' != 'win-x64' Or '$(SelfContained)' != 'true' Or '$(PublishSingleFile)' != 'true'"
+           Text="Unattended Setup must be published as a self-contained win-x64 single-file executable." />
+    <Error Condition="'$(IncludeNativeLibrariesForSelfExtract)' == 'true' Or '$(IncludeAllContentForSelfExtract)' == 'true'"
+           Text="Unattended Setup must not extract runtime or native code. The native bootstrap stages signed adjacent DLLs in its protected directory." />
+  </Target>
+</Project>

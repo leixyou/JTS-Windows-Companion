@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <RootNamespace>JTS.WindowsCompanion.Relay</RootNamespace>
+    <AssemblyName>JTS.WindowsCompanion.Relay</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="JTS.WindowsCompanion.Relay.Tests" />
+    <InternalsVisibleTo Include="JTS.WindowsCompanion.Control.Tests" />
+  </ItemGroup>
+</Project>

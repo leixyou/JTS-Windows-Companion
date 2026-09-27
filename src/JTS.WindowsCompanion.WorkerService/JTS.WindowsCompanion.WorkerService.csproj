@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../JTS.WindowsCompanion.WorkerIpc/JTS.WindowsCompanion.WorkerIpc.csproj" />
+    <ProjectReference Include="../JTS.WindowsCompanion.Execution/JTS.WindowsCompanion.Execution.csproj" />
+    <ProjectReference Include="../JTS.WindowsCompanion.Core/JTS.WindowsCompanion.Core.csproj" />
+    <InternalsVisibleTo Include="JTS.WindowsCompanion.WorkerService.Tests" />
+  </ItemGroup>
+</Project>

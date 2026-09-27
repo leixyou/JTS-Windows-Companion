@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JTS.WindowsCompanion.ReleaseManifestTool\JTS.WindowsCompanion.ReleaseManifestTool.csproj" />
+    <ProjectReference Include="..\..\src\JTS.WindowsCompanion.Core\JTS.WindowsCompanion.Core.csproj" />
+  </ItemGroup>
+</Project>

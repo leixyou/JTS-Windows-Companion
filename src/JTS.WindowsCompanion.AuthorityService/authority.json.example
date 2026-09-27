@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "enabled": false,
+  "enrollmentId": "00000000-0000-0000-0000-000000000000",
+  "deviceId": "replace-with-confirmed-device-id",
+  "authoritySid": "replace-with-provisioned-authority-account-sid",
+  "relayOrigin": "https://relay.example.invalid/",
+  "worker": {
+    "accountName": ".\\JTSWorker25",
+    "accountSid": "replace-with-separate-worker-account-sid",
+    "executablePath": "C:\\Program Files\\JTS Terminal\\JTS.WindowsCompanion.WorkerRunner.exe"
+  }
+}

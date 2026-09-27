@@ -1,0 +1,26 @@
+<Project>
+  <!-- Opt-in packaging graph. Ordinary 2.0 and Next development builds keep their existing settings. -->
+  <PropertyGroup Condition="'$(JtsNextPackageBuild)' == 'true'">
+    <VersionPrefix>2.5.0</VersionPrefix>
+    <Version>2.5.0</Version>
+    <PackageVersion>2.5.0</PackageVersion>
+    <AssemblyVersion>2.5.0.0</AssemblyVersion>
+    <FileVersion>2.5.0.0</FileVersion>
+    <InformationalVersion>2.5.0-preview</InformationalVersion>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <NuGetLockFilePath>$(MSBuildThisFileDirectory)packaging/next-locks/$(MSBuildProjectName).lock.json</NuGetLockFilePath>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>false</IncludeNativeLibrariesForSelfExtract>
+    <IncludeAllContentForSelfExtract>false</IncludeAllContentForSelfExtract>
+    <EnableCompressionInSingleFile>false</EnableCompressionInSingleFile>
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(JtsNextPackageBuild)' == 'true' and $([System.String]::Copy('$(TargetFramework)').StartsWith('net10.0'))">
+    <FrameworkReference Update="Microsoft.NETCore.App" RuntimeFrameworkVersion="10.0.12" />
+    <FrameworkReference Update="Microsoft.WindowsDesktop.App.WindowsForms" RuntimeFrameworkVersion="10.0.12" />
+  </ItemGroup>
+</Project>

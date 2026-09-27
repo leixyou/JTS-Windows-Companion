@@ -1,0 +1,26 @@
+name: Windows source verification
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.401
+      - run: dotnet build JTS.WindowsCompanion.sln --configuration Release
+      - run: dotnet restore JTS.WindowsCompanion.Next.slnx --locked-mode
+      - run: dotnet build JTS.WindowsCompanion.Next.slnx --configuration Release --no-restore
+      - run: dotnet test tests/JTS.WindowsCompanion.Control.Tests --configuration Release --no-build
+      - run: dotnet test tests/JTS.WindowsCompanion.Relay.Tests --configuration Release --no-build
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m unittest scripts.tests.test_companion_next_package scripts.tests.test_companion_bundle_inspection scripts.tests.test_companion_native_inspection

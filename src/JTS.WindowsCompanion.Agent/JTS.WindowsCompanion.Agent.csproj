@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <OutputType Condition="'$(Configuration)' == 'Release'">WinExe</OutputType>
+    <PlatformTarget>x64</PlatformTarget>
+    <RootNamespace>JTS.WindowsCompanion</RootNamespace>
+    <AssemblyName>JTS.WindowsCompanion.Agent</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+    <TargetFramework>net8.0-windows</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JTS.WindowsCompanion.Core\JTS.WindowsCompanion.Core.csproj" />
+    <ProjectReference Include="..\JTS.WindowsCompanion.Windows\JTS.WindowsCompanion.Windows.csproj" />
+  </ItemGroup>
+</Project>

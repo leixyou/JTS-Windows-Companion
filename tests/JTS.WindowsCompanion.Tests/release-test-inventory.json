@@ -1,0 +1,1453 @@
+{
+  "schemaVersion": 2,
+  "projectPath": "tests/JTS.WindowsCompanion.Tests/JTS.WindowsCompanion.Tests.csproj",
+  "assemblyName": "JTS.WindowsCompanion.Tests.dll",
+  "targetFramework": "net8.0",
+  "windowsTargetFramework": "net8.0-windows",
+  "adapterTypeName": "executor://xunit/VsTestRunner2/netcoreapp",
+  "expectedMethodCount": 288,
+  "expectedCaseCount": 349,
+  "canonicalInventorySha256": "0919129ab6006873cac1e232c29475544183df74421b551851578babb02309a1",
+  "tests": [
+    {
+      "key": "JTS.WindowsCompanion.Tests.AutomationContractTests.MutationExecutor_StopsWhenCancellationArrivesDuringFinalPreparation",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.AutomationContractTests.MutationExecutor_StopsWhenCancellationArrivesDuringPatternResolution",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.AutomationContractTests.MutationExecutor_StopsWhenCancellationArrivesDuringUniqueLookup",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.AutomationContractTests.MutationSelectorAmbiguityUsesNonRetryableProtocolError",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.AutomationContractTests.MutationSelector_RequiresProcessScopeAndStableIdentity",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.AutomationContractTests.Selector_RejectsInvalidProcessId",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.AutomationContractTests.Selector_RequiresAtLeastOneStableField",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryChunkRobustnessTests.Codec_RejectsNegativeOffsetInvalidFinalMarkerAndDigestChanges",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryChunkRobustnessTests.Codec_RejectsTruncatedMalformedAndOverLimitPayloads",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryChunkRobustnessTests.Codec_RoundTripsExactLengthBoundaries",
+      "caseCount": 3,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryChunkRobustnessTests.Coordinator_AcceptsExactDuplicateEmptyFinalChunk",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryChunkRobustnessTests.Coordinator_HashMismatchRemovesCompletedTransferState",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryChunkRobustnessTests.Coordinator_RejectsOutOfOrderOverlapConflictsAndInvalidCompletion",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryChunkRobustnessTests.SequenceGuard_RejectsDuplicateAndOutOfOrderChunkFrames",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryChunkRobustnessTests.SessionDisconnectCleanup_RemovesPartialStateAndFreshSessionStartsAtZero",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryTransferTests.Dispose_RemovesAllSessionTransferFiles",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryTransferTests.Download_RetryResumesAtVerifiedOffsetWithoutRepeatingBytes",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryTransferTests.EmptyFileTransfer_UsesAnExplicitFinalChunkAndVerifiedEmptyDigest",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryTransferTests.TransferStore_EnforcesConcurrencyLimitAndReleaseIsIdempotent",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryTransferTests.Upload_AcceptsLargeContiguousChunksAndExactDuplicateRetry",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BinaryTransferTests.Upload_RejectsGapAndDeletesHashMismatch",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BrokerProcessShutdownTests.StopAsync_FailsClosedWhenKilledBrokerDoesNotExit",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BrokerProcessShutdownTests.StopAsync_KillsBrokerTreeAfterGracePeriodAndWaitsForExit",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.BrokerProcessShutdownTests.StopAsync_WaitsForGracefulBrokerExitBeforeKilling",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentCancellationTests.AuthenticatedCancelPendingDrainsOnlyTheLiveOwnerAndPreservesPairing",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentCancellationTests.AuthenticatedExactCancellationTargetsOneRequestAndKeepsAgentAlive",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentCancellationTests.OperationDeadlineReturnsSanitizedFailureWithoutStoppingAgent",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentCancellationTests.UnpairCancelsDrainsAndFencesNewOwnedOperationsBeforeRevocation",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentReadinessTests.Contract_AcceptsOnlyGeneratedPipeNames",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentReadinessTests.Server_AcceptsTheExpectedWindowsProcessAndProtocolByte",
+      "caseCount": 1,
+      "skipPolicy": "windows-integration"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentReadinessTests.Server_RejectsAConnectedProcessWithTheWrongExpectedPid",
+      "caseCount": 1,
+      "skipPolicy": "windows-integration"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentReadinessTests.Server_RejectsAnInvalidProtocolByte",
+      "caseCount": 1,
+      "skipPolicy": "windows-integration"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentStartupGateTests.HeldSetupGate_TimesOutWithoutStartingTheAgent",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentStartupGateTests.ImageReplacedWhileSetupOwnsGate_ExitsTheSupersededAgent",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentStartupGateTests.OutsideInstalledPath_DoesNotCreateOrWaitOnTheSetupGate",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentStartupGateTests.StableInstalledImage_ContinuesAndLeavesThePersistentGateFile",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentTests.Agent_AuthorizationSuccessIsFirstSignedFrameAndUnsignedPostAuthClosesSession",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentTests.Agent_CancellationControlBypassesTheConcurrentOperationLimit",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentTests.Agent_DispatchesEmergencyElevationReleaseWhileAnotherRequestIsRunning",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentTests.Agent_DoesNotReportConnectedWhenChannelConnectFails",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentTests.Agent_RejectsBinaryFramesBeforeTransferLookupWhenUnpaired",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentTests.Agent_ReportsConnectedOnlyAfterTheChannelConnects",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentTests.Agent_UsesFramedTestTransportAndReturnsSanitizedResponse",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentTests.Router_RejectsLogInjectionInMethodName",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAgentTests.TransportDiagnosticsAreBoundedAndExcludeResponseContents",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAuthorizationTests.AuthorizationChallengeIsSingleUseAndExpiresClosed",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAuthorizationTests.AuthorizedPeerCanRevokeGrantAndImmediatelyLosesAccess",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAuthorizationTests.ClientProof_BindsBothDevicesChallengeSequenceAndTime",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAuthorizationTests.DeclinedPairingDoesNotPersistOrAuthorizeClient",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAuthorizationTests.FirstPairingRequiresConsentAndMatchingPeerCanReauthenticate",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAuthorizationTests.IdempotencyCacheIsPartitionedByPeerAndMethod",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAuthorizationTests.MismatchedPeerIsRejectedWithoutPromptOrGrantReplacement",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAuthorizationTests.RouterDeniesStructuredMethodsBeforeHandlerAndAllowsBootstrap",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionAuthorizationTests.SessionResetWhileConsentIsPendingSupersedesAuthorizationWithoutPersisting",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionFrameAuthenticationTests.AuthenticationEnvelope_IsIncludedInProtocolPayloadLimit",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionFrameAuthenticationTests.CanonicalFixture_MatchesSwiftByteForByte",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionFrameAuthenticationTests.PostAuthorizationFrames_AreSignedAndVerifiedInBothDirections",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionFrameAuthenticationTests.UnsignedTamperedReflectedAndOldSessionFrames_FailClosed",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionOperationRegistryTests.CancelOwnerDrainsOnlyMatchingOwner",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionOperationRegistryTests.DeadlineAndDisconnectHaveDeterministicCancellationReasons",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionOperationRegistryTests.ExactCancellationRequiresTheSameLiveSessionOwner",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionOperationRegistryTests.MaximumWireDeadlineIsSafelyScheduledWithoutOverflow",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionOperationRegistryTests.OwnerDrainCancelsWaitsAndBlocksNewWorkUntilReleased",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.AgentStartInfo_AddsReadinessOnlyToTheOneShotLaunch",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.AgentStartInfo_RejectsAnUntrustedReadinessPipeName",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Execute_AggregatesStopFailureAfterStateWasMadeAvailable",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Execute_CannotRunTwice",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Execute_DoesNotSpendGracefulWaitOnHeadlessProcess",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Execute_WaitsForGracefulCloseAndDoesNotTerminateAfterExit",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Prepare_AcquiresEveryStopHandleBeforeStoppingAndLeavesAllRunningOnAccessDenied",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Prepare_FailsClosedWhenExactInstalledPathOwnerCannotBeVerified",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Prepare_IdentifiesAllTargetsBeforeExecuteAndStopsAgentBeforeBroker",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Prepare_IgnoresDifferentPathAndUninspectableSameNameProcesses",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Prepare_PreservesPriorStateWhenProcessExitsBeforeStopHandleOpens",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Prepare_RejectsExactInstalledPathOwnedByAnotherAccount",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Prepare_RevalidatesPathOnStopHandleAndNeverStopsChangedIdentity",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionProcessControllerTests.Prepare_TreatsExitDuringStopHandleRevalidationAsSuccess",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionReconnectLoopTests.CancellationDuringBackoffOrBeforeStartNeverRespawnsASession",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionReconnectLoopTests.CleanSessionEndAlsoWaitsAndHonorsShutdown",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionReconnectLoopTests.FreshAgentGenerationResetsAuthorizationReplayAndOutboundSequence",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionReconnectLoopTests.PairingPromptHonorsPreCancelledTokenWithoutOpeningADialog",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionReconnectLoopTests.ProtocolAuthenticationCryptoAndUnclassifiedNativeFailuresRemainFatal",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionReconnectLoopTests.SendFailureDrainsTheCancelledReceiveBeforeDisposingOrReopening",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionReconnectLoopTests.TransportFailuresArePacedWithCappedBackoffBeforeAnotherAttempt",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionSetupRecoveryMetadataTests.Create_RejectsLaunchingTheAgentAfterUninstallCommit",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionSetupRecoveryMetadataTests.Create_RejectsPurgingStateAfterInstallCommit",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionSetupRecoveryMetadataTests.Deserialize_RejectsAnUnsupportedSchema",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionSetupRecoveryMetadataTests.RoundTrip_PreservesDurablePurgeIntentForUninstall",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionSetupRecoveryMetadataTests.RoundTrip_PreservesTheAgentLifecycleIntent",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionTerminalFailureDiagnosticTests.KnownProtocolFailureKeepsOnlyAnAllowlistedCode",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionTerminalFailureDiagnosticTests.UnknownExceptionDoesNotReadMessageOrToString",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionTerminalFailureDiagnosticTests.UnknownProtocolCodeCannotInjectOrLeakText",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.CompanionTerminalFailureDiagnosticTests.Win32FailureContainsOnlyStableNumericCodes",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentContractTests.IdentityRequiresMatchingFingerprintCompleteSpkiAndNistP256",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentContractTests.ImportWindowMustBeCurrentAndNoLongerThanThirtyMinutes",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentContractTests.ParseAcceptsExactBoundRequestAndNormalizesPublicValues",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentContractTests.ParseRejectsDatesWithoutZoneAndInvalidFieldTypes",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentContractTests.ParseRejectsDuplicateUnknownMissingAndWrongCaseFields",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentContractTests.ParseRejectsUnapprovedSourceAndTargetMetadata",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentContractTests.ParseRequiresMatchingRawRequestDigestAndBoundedUtf8",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentContractTests.ReceiptRejectsPeerMismatchInvalidAuditAndApprovalOutsideWindow",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentContractTests.ReceiptRemainsValidAfterImportWindowAndKeepsAuditBindings",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentContractTests.WindowsBindingRequiresDeviceIdAndVerifiedPublicKeyFingerprint",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentPersistenceTests.ConcurrentIndependentStoresCannotOverwriteDifferentEnrollments",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentPersistenceTests.DelegatedGrantStillRequiresFreshValidProofAndUnpairRevokesAcrossRestart",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentPersistenceTests.ExistingIdentityLookupNeverCreatesMissingOrRepairsCorruptIdentity",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentPersistenceTests.FailedProtectionNeverPublishesGrantOrLosesExistingGrantOnRevoke",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentPersistenceTests.LegacyV1GrantRemainsReadableAndIsNeverRelabeledAsDelegated",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentPersistenceTests.NewSessionRequiresNewChallengeForPersistedDelegation",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentPersistenceTests.RevocationChecksExactGrantAndPersistsTombstoneAcrossRestart",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentPersistenceTests.SameRequestPreservesOriginalReceiptAndConflictingGrantCannotReplaceIt",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentPersistenceTests.StoredDelegationCannotFollowAChangedWindowsIdentity",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DelegatedEnrollmentPersistenceTests.WindowsBindingMismatchAndExpiredImportCannotCreateAReceipt",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.ContinuationWithoutFirst_IsRejected",
+      "caseCount": 2,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.DeclaredLengthChange_IsRejected",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.EmptyFragment_IsRejectedAndClearsPartialMessage",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.FirstMiddleLast_ReassemblesFrameForCompanionDecoder",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.LastChunkMustCompleteExactDeclaredLength",
+      "caseCount": 2,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.MessageOverBufferLimit_IsRejectedBeforeAllocation",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.MiddleChunkCannotCompleteDeclaredLength",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.NestedFirst_IsRejectedAndClearsPartialMessage",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.OnlyChunkLengthMismatch_IsRejected",
+      "caseCount": 2,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.OnlyChunk_ReturnsCompleteMessage",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.Reset_DiscardsInProgressMessage",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.TruncatedHeader_IsRejected",
+      "caseCount": 2,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.UnsupportedFlags_AreRejected",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.DvcPduReassemblerTests.ZeroLengthMessage_IsRejected",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ElevatedPowerShellContainmentTests.ExecutionTimeout_TerminatesContainmentAndReturnsTimedOutResult",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ElevatedPowerShellContainmentTests.Executor_CancelsEveryProcessLifecycleStageAndDisposesContainment",
+      "caseCount": 4,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ElevatedPowerShellContainmentTests.LeaseExpiration_ActivelyCancelsRunningPowerShell",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ElevatedPowerShellContainmentTests.LeaseRevocation_ActivelyCancelsRunningPowerShell",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ElevatedPowerShellContainmentTests.ProductionExecutor_FailsClosedWithoutWindowsJobObjects",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ElevationBrokerLeaseCancellationTests.BrokerSession_LeaseDeadlineCancelsInFlightExecutionAndReturnsSafeError",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ElevationBrokerTests.ActionBuilder_BindsFullScriptDirectoryScopesAndExecutionPayload",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ElevationBrokerTests.BrokerSession_OpensReportsAndReleasesExactLeaseOverFramedPipe",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ElevationBrokerTests.LocalIpcCodec_RejectsOversizedAndTruncatedFrames",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.FileSandboxTests.FileService_RejectsHashMismatchAndReadOnlyRoot",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.FileSandboxTests.FileService_WritesAtomicallyAndVerifiesHash",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.FileSandboxTests.Resolve_RejectsSymbolicLinkEscape",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.FileSandboxTests.Resolve_RejectsTraversalAndAbsolutePaths",
+      "caseCount": 5,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.FileTransferProtocolTests.BinaryExport_RejectsAnExistingDirectoryAsItsSpoolDestination",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.FileTransferProtocolTests.BinaryImport_RechecksHashAndCancellationBeforeAtomicMove",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.FileTransferProtocolTests.FileDownload_StagesRequestedRangeAndReturnsHashBoundBinaryDescriptor",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.FileTransferProtocolTests.FileTransfer_EnforcesInlineAndRangeLimitsBeforeWriting",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.FileTransferProtocolTests.FileUpload_ConsumesVerifiedSpoolAndAtomicallyWritesSandboxedDestination",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerCrashRecoveryTests.Recovery_CompletesCommittedTransactionalUninstall",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerCrashRecoveryTests.Recovery_DoesNotDeleteAConcurrentFirstInstallation",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerCrashRecoveryTests.Recovery_DoesNotDiscardBackupWhenCommittedLiveDirectoryIsMissing",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerCrashRecoveryTests.Recovery_RemovesFirstInstallMovedBeforePhaseWrite",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerCrashRecoveryTests.Recovery_ResumesAfterOldDirectoryWasRestored",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerDirectoryTransactionTests.Begin_RejectsAReparsePointStagingDirectory",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerDirectoryTransactionTests.Commit_ReplacesTheWholeInstallationAndRetainsStateRoot",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerDirectoryTransactionTests.EmptyReplacement_CommitSupportsTransactionalUninstall",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerDirectoryTransactionTests.EmptyReplacement_RollbackRestoresUninstalledFiles",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerDirectoryTransactionTests.Recovery_CompletesCleanupWithoutRollingBackCommittedInstall",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerDirectoryTransactionTests.Recovery_RestoresAnOldDirectoryWhenCrashPrecedesPhaseWrite",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerDirectoryTransactionTests.Recovery_RollsBackWhenNewDirectoryMovedBeforePhaseWrite",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerDirectoryTransactionTests.Rollback_FirstInstallRemovesTheActivatedDirectory",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerDirectoryTransactionTests.Rollback_RestoresEveryOldFileAndRegistrationMetadata",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerResidueScavengerTests.Cleanup_RefusesToRunWhileAJournalIsPending",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerResidueScavengerTests.Cleanup_RejectsAReparsePointWithAGeneratedStagingName",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerResidueScavengerTests.Cleanup_RemovesOnlyStrictGeneratedResidue",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTests.DeleteDirectory_RemovesOnlyTheRequestedTree",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTests.Options_DefaultToInteractiveInstall",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTests.Options_ParseInternalInstall",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTests.Options_ParseQuietPurgeUninstall",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTests.Options_RejectConflictingOrInvalidArguments",
+      "caseCount": 5,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTests.Options_RequirePinnedExplicitDelegationAndSupportExactOfflineRevocation",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTests.SafeInstallRoot_RejectsSiblingPrefixAndParentEscape",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTests.WindowsArgumentQuoter_PreservesWindowsParsingBoundaries",
+      "caseCount": 5,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTransactionConcurrencyTests.AdvancePhase_RejectsAStaleExpectedPhaseWithoutMutation",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTransactionConcurrencyTests.AdvancePhase_RejectsAnIllegalTransitionWithoutMutation",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTransactionConcurrencyTests.AdvancePhase_RejectsForeignTransactionIdWithoutMutation",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTransactionConcurrencyTests.CompletePendingRollback_RejectsForeignTransactionIdAndPreservesJournal",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTransactionConcurrencyTests.CreateNew_DoesNotOverwriteAnExistingTransactionJournal",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTransactionConcurrencyTests.OperationLease_AllowsOnlyOneCrossProcessHolderAndPersistsAcrossReacquisition",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTransactionConcurrencyTests.OperationLease_CrossProcessProbe",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.InstallerTransactionConcurrencyTests.RecoverPending_RejectsForeignTransactionIdBeforeChangingDirectories",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.LockedExecutableCopyTests.Copy_HoldsBothFilesAgainstModificationUntilLaunchCompletes",
+      "caseCount": 1,
+      "skipPolicy": "windows-integration"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.LockedExecutableCopyTests.Copy_PreservesExactBytesWithoutRequiringAuthenticode",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.LockedExecutableCopyTests.Copy_RejectsExistingDestinationWithoutOverwritingIt",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.LockedExecutableCopyTests.Copy_RejectsMissingSourceWithoutCreatingDestination",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_AcceptsExactScmProcessAndAuthenticatedRelease",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_RejectsInteractiveToken",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_RejectsNonLocalSystemSid",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_RejectsNonZeroSession",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_RejectsPipePidThatDoesNotMatchScmPid",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_RejectsProcessPidThatDoesNotMatchScmPid",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_RejectsUnknownIdentityField",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_RejectsUntrustedReleaseExecutable",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_RejectsWrongRegisteredOrRunningPath",
+      "caseCount": 4,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_RejectsWrongRegisteredService",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.Attestor_RejectsWrongScmOrNonInteractiveServiceContext",
+      "caseCount": 5,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.ServiceStartupAttestor_AcceptsOnlyScmStartPendingIdentity",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.StartupArguments_DebugConsoleRequiresExplicitBuildGate",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.StartupArguments_ProductionModeRejectsConsoleHost",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceIdentityTests.WindowsIdentitySource_FailsClosedOffWindows",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceTests.Dispatcher_RejectsUninstalledShellWithoutCallingHandler",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ManagedServiceTests.InstalledStore_LoadsOnlyHashPinnedRelativeHandlerAndFixedOperations",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PlatformGuardTests.WindowsAdapters_FailClosedWhenBuiltOrRunOutsideWindows",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PolicyTests.ManagedPolicy_AuthorizesOnlyManifestedFixedOperations",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PolicyTests.ManagedPolicy_RejectsShellOperationsAtInstallationTime",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PolicyTests.ShellDefaultDirectoryDoesNotAdmitNestedTraversal",
+      "caseCount": 8,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PolicyTests.ShellDefaultDirectoryRechecksRootReplacementAndRemoval",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PolicyTests.ShellDefaultDirectoryResolvesOnlyTheSelectedConfiguredRoot",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PolicyTests.ShellPolicy_RejectsElevationSecretEnvironmentAndEscapes",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ProtocolTests.BinaryChunkCodec_MatchesSwiftGuidAndDigestFixture",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ProtocolTests.BinaryChunkCodec_RoundTripsAndAuthenticatesChunk",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ProtocolTests.FrameCodec_DecodesSwiftRequestFixture",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ProtocolTests.FrameCodec_DotNetResponseMatchesSwiftFixture",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ProtocolTests.FrameCodec_RejectsOversizedControlPayload",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ProtocolTests.FrameDecoder_ReassemblesFragmentedFrames",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ProtocolTests.FrameDecoder_RejectsTamperedPayload",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ProtocolTests.FrameDecoder_ResetDiscardsPartialFrame",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ProtocolTests.Protocol_UsesProductWideDynamicVirtualChannelName",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ProtocolTests.ReplayGuard_RequiresStrictlyIncreasingSequence",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.RegistrationSnapshotCodecTests.Codec_RejectsUnsupportedSchemaAndInvalidBinary",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.RegistrationSnapshotCodecTests.Codec_RoundTripsAllSupportedRegistryValueKinds",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseExecutableTrustTests.ManagedHandler_RejectsUnlistedHandlerEvenWhenItsOperationDigestMatches",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseExecutableTrustTests.ManagedHandler_RequiresBothAuthenticatedReleaseAndFixedOperationDigest",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseExecutableTrustTests.ReleaseVerifier_DoesNotAcceptPeerFromAnotherAuthenticatedRelease",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseExecutableTrustTests.ReleaseVerifier_RequiresTheExactPeerRoleAndPinnedBytes",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseManifestTrustTests.LoadForExecutable_DoesNotTrustAdjacentOrEnvironmentPublicKey",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseManifestTrustTests.VerifiedRelease_AcceptsExactUnsignedFilesAndReturnsLockedHandle",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseManifestTrustTests.VerifiedRelease_RejectsSymbolicLink",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseManifestTrustTests.VerifiedRelease_RejectsTamperedMixedOrWrongRoleExecutable",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseManifestTrustTests.Verify_RejectsAmbiguousEnvelope",
+      "caseCount": 4,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseManifestTrustTests.Verify_RejectsDuplicateFileNamesAndUntrustedChecksums",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseManifestTrustTests.Verify_RejectsMalformedSignedSchema",
+      "caseCount": 6,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseManifestTrustTests.Verify_RejectsPrivateKeyWrongCurveAndOversizeEnvelope",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseManifestTrustTests.Verify_RejectsUnsafeFileName",
+      "caseCount": 6,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.ReleaseManifestTrustTests.Verify_RejectsWrongKeyAndTamperedSignedPayload",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.RouterTests.Router_CachesIdempotentResponsesWithoutRepeatingHandler",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.RouterTests.Router_CoalescesConcurrentRequestsWithTheSameIdempotencyKey",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.RouterTests.Router_DoesNotExposeUnexpectedExceptionMessages",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.RouterTests.Router_RejectsExpiredUnknownAndUnsupportedRequests",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.SecurityTests.ElevationLease_EnforcesFifteenMinuteMaximum",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.SecurityTests.ElevationLease_RequiresExplicitConsentAndExactPayload",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.SecurityTests.PairingProof_BindsIdentityChallengeSequenceAndTime",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.SensitiveInteractionCoordinatorTests.BarrierFailsFastAndNeverQueuesBehindHumanPrompt",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.SensitiveInteractionCoordinatorTests.ConcurrentMutationCannotEnterUntilCurrentOperationCompletes",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.SensitiveInteractionCoordinatorTests.DisposingLeaseExactlyOnceReleasesBarrier",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.TemporarySetupCleanupSchedulerTests.CleanupScript_HasABoundedRetryLimitAndAlwaysExits",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.TemporarySetupCleanupSchedulerTests.CleanupScript_NeverRemovesTheRootWhileTheLaunchSentinelExists",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.TemporarySetupCleanupSchedulerTests.CreateTemporaryRoot_ProducesAnExactlyRecognizedSetupPath",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.TemporarySetupCleanupSchedulerTests.IdentifyTemporaryRoot_RejectsAValidNameOutsideTheSystemTempParent",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.TemporarySetupCleanupSchedulerTests.IdentifyTemporaryRoot_RejectsWrongExecutableAndLookalikeDirectory",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.TemporarySetupCleanupSchedulerTests.LaunchSentinel_RejectsAnInvalidOwnershipMarker",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.TemporarySetupCleanupSchedulerTests.LaunchSentinel_RejectsAnOwnedLookalikeDirectoryName",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.TemporarySetupCleanupSchedulerTests.LaunchSentinel_RemainsUntilTheCleanupHelperDeletesIt",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.UacElevationBrokerSessionTests.DisposeAsync_SignalsCancellationAndWaitsForBrokerExit",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.UacElevationBrokerSessionTests.LeaseDeadline_SignalsAndStopsBrokerWithoutAStatusQuery",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.UiAutomationBoundsTests.EmptyDeepNodeDoesNotTurnAValidSnapshotIntoRequestInvalid",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.UiAutomationBoundsTests.FiniteProviderGeometryIsPreserved",
+      "caseCount": 3,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.UiAutomationBoundsTests.UnavailableProviderGeometryHasFiniteZeroAreaOnTheWire",
+      "caseCount": 7,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcEnvelopeSecurityTests.CanonicalFixtures_MatchSwiftByteForByte",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcEnvelopeSecurityTests.JobEnvelope_FailsClosedWhenAnySignedBindingChanges",
+      "caseCount": 6,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcEnvelopeSecurityTests.JobEnvelope_RejectsUnsignedAdditionalFields",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcEnvelopeSecurityTests.JobEnvelope_VerifiesPairedIdentitySignatureAndExactArtifactBinding",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcEnvelopeSecurityTests.ResultEnvelope_IsSignedByWindowsAndBindsPairedClientAndArtifact",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcFactoryWorkerBridgeTests.Collect_ReturnsBinaryTransferDescriptorAndExactChunkedBundle",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcFactoryWorkerBridgeTests.Doctor_RemovesObsoleteTailscaleGateButRequiresEveryLocalWorkerCheck",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcFactoryWorkerBridgeTests.InstalledExecutableVerifier_RejectsExecutableDigestChange",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcFactoryWorkerBridgeTests.MethodRegistrar_ReturnsStableNotConfiguredErrorWithoutProvider",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcFactoryWorkerBridgeTests.MethodRegistrar_RoutesStatusAndPreservesStructuredWorkerResult",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcFactoryWorkerBridgeTests.StatusAndCancel_UseOnlyValidatedJobIdArguments",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcFactoryWorkerBridgeTests.Status_RejectsTaskProvidedShellExecutableAndArgumentsBeforeLaunchingProcess",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcFactoryWorkerBridgeTests.Submit_FailsClosedWhenWorkerReportsDifferentBundleDigest",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.VrcFactoryWorkerBridgeTests.Submit_UsesPinnedExecutableFixedSubcommandAndVerifiesBundleHash",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WindowsElevationIntegrationTests.AuthenticodeVerifier_FailsClosedForUnsignedTestAssembly",
+      "caseCount": 1,
+      "skipPolicy": "windows-integration"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WindowsElevationIntegrationTests.InteractiveConsent_CancellationClosesTheDialog",
+      "caseCount": 1,
+      "skipPolicy": "interactive-consent"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WindowsElevationIntegrationTests.InteractiveConsent_IsNeverRunUnlessExplicitlyEnabled",
+      "caseCount": 1,
+      "skipPolicy": "interactive-consent"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WindowsElevationIntegrationTests.ManagedPipe_AcceptsConfiguredCurrentUserClient",
+      "caseCount": 1,
+      "skipPolicy": "windows-integration"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WindowsIdentityTests.Identity_PersistsStableP256KeyThroughProtectorAbstraction",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WindowsIdentityTests.PeerStore_FailsClosedWhenProtectedEnvelopeIsMalformed",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WindowsIdentityTests.PeerStore_ProtectsGrantAndNeverOverwritesDifferentIdentity",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WindowsUiAutomationIntegrationTests.IndependentFixtureProcess_SupportsSnapshotFindSetValueInvokeAndWait",
+      "caseCount": 1,
+      "skipPolicy": "interactive-uia"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WindowsUiAutomationIntegrationTests.WritableTextSelector_FallsBackToNameAndContinuesAfterRejectedCandidates",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WorkerTests.Coordinator_RunsOnlyRegisteredFixedOperations",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WorkerTests.Registry_RejectsArbitraryShellProvider",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WtsChannelReadLoopTests.CancellationStopsIdleReadWithoutAnotherNativeAttempt",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WtsChannelReadLoopTests.EmptyAndTimeoutResultsArePacedWithoutResettingPartialPdu",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WtsChannelReadLoopTests.HardFailuresAndFailedPartialReadsRetainNativeErrorWithoutRetry",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WtsChannelReadLoopTests.IncompleteReadWaitsBeforeReturningCompletedData",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WtsChannelReadLoopTests.InvalidNativeCountsAreRejectedBeforeCopying",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WtsNativeCallGateTests.CancelledWaiterNeverCallsNativeOrConsumesTheNextPermit",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WtsNativeCallGateTests.NativeFailureRemainsObservableAndReleasesGate",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.WtsNativeCallGateTests.PendingFiniteReadExcludesWriteUntilItReturns",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    }
+  ]
+}

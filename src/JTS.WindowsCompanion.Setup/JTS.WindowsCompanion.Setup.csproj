@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <PlatformTarget>x64</PlatformTarget>
+    <RootNamespace>JTS.WindowsCompanion.Setup</RootNamespace>
+    <AssemblyName>JTS.WindowsCompanion.Setup</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JTS.WindowsCompanion.Installation\JTS.WindowsCompanion.Installation.csproj" />
+    <ProjectReference Include="..\JTS.WindowsCompanion.Windows\JTS.WindowsCompanion.Windows.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(ReleaseManifestPath)' != ''">
+    <EmbeddedResource Include="$(ReleaseManifestPath)" LogicalName="JTS.Setup.Payload.ReleaseManifest.json" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(AgentPayloadPath)' != '' And '$(BrokerPayloadPath)' != ''">
+    <EmbeddedResource Include="$(AgentPayloadPath)" LogicalName="JTS.Setup.Payload.Agent.exe" />
+    <EmbeddedResource Include="$(BrokerPayloadPath)" LogicalName="JTS.Setup.Payload.UacBroker.exe" />
+  </ItemGroup>
+  <Target Name="ValidateInstallerPayloads"
+          BeforeTargets="Publish">
+    <Error Condition="'$(CompanionReleasePublicKeyPath)' == '' Or !Exists('$(CompanionReleasePublicKeyPath)')"
+           Text="CompanionReleasePublicKeyPath must reference the build-embedded P-256 release public key." />
+    <Error Condition="'$(AgentPayloadPath)' == '' Or !Exists('$(AgentPayloadPath)')"
+           Text="AgentPayloadPath must reference the release-manifest-pinned JTS.WindowsCompanion.Agent.exe." />
+    <Error Condition="'$(BrokerPayloadPath)' == '' Or !Exists('$(BrokerPayloadPath)')"
+           Text="BrokerPayloadPath must reference the release-manifest-pinned JTS.WindowsCompanion.UacBroker.exe." />
+    <Error Condition="'$(ReleaseManifestPath)' == '' Or !Exists('$(ReleaseManifestPath)')"
+           Text="ReleaseManifestPath must reference the authenticated Companion release manifest." />
+  </Target>
+</Project>

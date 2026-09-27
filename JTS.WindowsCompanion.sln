@@ -1,0 +1,73 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTS.WindowsCompanion.Core", "src\JTS.WindowsCompanion.Core\JTS.WindowsCompanion.Core.csproj", "{6F8C5F3E-D43C-4D30-A27D-3BD90FB5F630}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTS.WindowsCompanion.Windows", "src\JTS.WindowsCompanion.Windows\JTS.WindowsCompanion.Windows.csproj", "{389F601E-F5B0-44BE-B8B8-63A2E86D9070}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTS.WindowsCompanion.Installation", "src\JTS.WindowsCompanion.Installation\JTS.WindowsCompanion.Installation.csproj", "{D7F3662C-1A22-4B83-8120-34F4D66B97E0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTS.WindowsCompanion.Agent", "src\JTS.WindowsCompanion.Agent\JTS.WindowsCompanion.Agent.csproj", "{4802691B-9DA6-45BA-8BE7-5E83CA58178D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTS.WindowsCompanion.UacBroker", "src\JTS.WindowsCompanion.UacBroker\JTS.WindowsCompanion.UacBroker.csproj", "{2E544934-6A81-4CB7-B114-FBB8246CB0D8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTS.WindowsCompanion.ManagedService", "src\JTS.WindowsCompanion.ManagedService\JTS.WindowsCompanion.ManagedService.csproj", "{83E60862-E157-42B3-A5D4-97634A7F4DD9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTS.WindowsCompanion.Setup", "src\JTS.WindowsCompanion.Setup\JTS.WindowsCompanion.Setup.csproj", "{24275B9F-D213-4D3D-A41C-EECDDAD9DB6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTS.WindowsCompanion.ElevationQaRunner", "tools\JTS.WindowsCompanion.ElevationQaRunner\JTS.WindowsCompanion.ElevationQaRunner.csproj", "{A5C117B3-6E11-4B38-B33F-7D3E2D13A9F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTS.WindowsCompanion.UiAutomationFixture", "tools\JTS.WindowsCompanion.UiAutomationFixture\JTS.WindowsCompanion.UiAutomationFixture.csproj", "{D3FA0981-8634-44AA-8456-AE63D70C4A52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JTS.WindowsCompanion.Tests", "tests\JTS.WindowsCompanion.Tests\JTS.WindowsCompanion.Tests.csproj", "{06C93E55-A95B-44AA-B6D2-59EA8F4D19A1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6F8C5F3E-D43C-4D30-A27D-3BD90FB5F630}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F8C5F3E-D43C-4D30-A27D-3BD90FB5F630}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F8C5F3E-D43C-4D30-A27D-3BD90FB5F630}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F8C5F3E-D43C-4D30-A27D-3BD90FB5F630}.Release|Any CPU.Build.0 = Release|Any CPU
+		{389F601E-F5B0-44BE-B8B8-63A2E86D9070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{389F601E-F5B0-44BE-B8B8-63A2E86D9070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{389F601E-F5B0-44BE-B8B8-63A2E86D9070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{389F601E-F5B0-44BE-B8B8-63A2E86D9070}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7F3662C-1A22-4B83-8120-34F4D66B97E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7F3662C-1A22-4B83-8120-34F4D66B97E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7F3662C-1A22-4B83-8120-34F4D66B97E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7F3662C-1A22-4B83-8120-34F4D66B97E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4802691B-9DA6-45BA-8BE7-5E83CA58178D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4802691B-9DA6-45BA-8BE7-5E83CA58178D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4802691B-9DA6-45BA-8BE7-5E83CA58178D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4802691B-9DA6-45BA-8BE7-5E83CA58178D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E544934-6A81-4CB7-B114-FBB8246CB0D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E544934-6A81-4CB7-B114-FBB8246CB0D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E544934-6A81-4CB7-B114-FBB8246CB0D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E544934-6A81-4CB7-B114-FBB8246CB0D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83E60862-E157-42B3-A5D4-97634A7F4DD9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83E60862-E157-42B3-A5D4-97634A7F4DD9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83E60862-E157-42B3-A5D4-97634A7F4DD9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83E60862-E157-42B3-A5D4-97634A7F4DD9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{24275B9F-D213-4D3D-A41C-EECDDAD9DB6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{24275B9F-D213-4D3D-A41C-EECDDAD9DB6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{24275B9F-D213-4D3D-A41C-EECDDAD9DB6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{24275B9F-D213-4D3D-A41C-EECDDAD9DB6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5C117B3-6E11-4B38-B33F-7D3E2D13A9F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5C117B3-6E11-4B38-B33F-7D3E2D13A9F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5C117B3-6E11-4B38-B33F-7D3E2D13A9F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5C117B3-6E11-4B38-B33F-7D3E2D13A9F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3FA0981-8634-44AA-8456-AE63D70C4A52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3FA0981-8634-44AA-8456-AE63D70C4A52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3FA0981-8634-44AA-8456-AE63D70C4A52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3FA0981-8634-44AA-8456-AE63D70C4A52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06C93E55-A95B-44AA-B6D2-59EA8F4D19A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06C93E55-A95B-44AA-B6D2-59EA8F4D19A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06C93E55-A95B-44AA-B6D2-59EA8F4D19A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06C93E55-A95B-44AA-B6D2-59EA8F4D19A1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../JTS.WindowsCompanion.WorkerIpc/JTS.WindowsCompanion.WorkerIpc.csproj" />
+    <ProjectReference Include="../JTS.WindowsCompanion.Execution/JTS.WindowsCompanion.Execution.csproj" />
+    <ProjectReference Include="../JTS.WindowsCompanion.WorkerService/JTS.WindowsCompanion.WorkerService.csproj" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(RuntimeIdentifier)' == 'win-x64' and '$(Configuration)' == 'Release'">
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+</Project>
