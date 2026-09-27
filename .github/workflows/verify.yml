@@ -26,10 +26,14 @@ jobs:
       - name: Verify native Windows identity and pinned TLS
         shell: pwsh
         run: |
-          $env:JTS_IDENTITY_TEST_ACCOUNT_SID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
-          $env:JTS_IDENTITY_TEST_DIRECTORY = Join-Path $env:RUNNER_TEMP 'jts-identity-ci'
-          New-Item -ItemType Directory -Path $env:JTS_IDENTITY_TEST_DIRECTORY -Force | Out-Null
-          dotnet test tests/JTS.WindowsCompanion.Pairing.Tests --configuration Release --no-build --filter 'FullyQualifiedName~WindowsIdentityAcceptanceTests|FullyQualifiedName~IdentityTransportTests'
+          ./scripts/tests/run-native-identity-ci.ps1 -TestOutputDirectory ./tests/JTS.WindowsCompanion.Pairing.Tests/bin/Release/net10.0 -EvidenceDirectory "$env:RUNNER_TEMP/jts-native-identity-evidence"
+      - name: Preserve native identity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-native-identity
+          path: ${{ runner.temp }}/jts-native-identity-evidence
+          if-no-files-found: ignore
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
