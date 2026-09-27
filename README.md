@@ -1,6 +1,10 @@
 # JTS Windows Companion
 
-The Windows endpoint for JTS remote administration. It provides direct command execution, file operations and an encrypted RDP transport for the [JTS Terminal macOS client](https://github.com/leixyou/JTS-Terminal-2.0), with the independently deployable [JTS Relay](https://github.com/leixyou/JTS-Relay).
+**一个 JTS 终端，让 AI 像操作本机一样，直接调用远程 Windows 的命令、文件和界面能力。**
+
+JTS Windows Companion brings a Windows machine into the [JTS Terminal](https://github.com/leixyou/JTS-Terminal-2.0) workspace. AI clients use one terminal to request remote commands, file operations and semantic Windows UI Automation, with structured results returned to the same workflow. Companion executes authorized operations on Windows and keeps device identity, capability grants and Windows account boundaries in force.
+
+For a directly reachable machine, the current-user Agent communicates through the RDP dynamic virtual channel, including over a LAN. When a direct path is unavailable, the outbound relay endpoint connects through the independently deployable [JTS Relay](https://github.com/leixyou/JTS-Relay), which forwards encrypted control, file and RDP streams. Semantic UI Automation runs in the interactive Windows session through the current-user Agent; the relay provides connectivity.
 
 **Status: developer preview.** This source snapshot includes the current-user RDP Companion and the newer outbound relay endpoint. Portable tests and cross-compilation do not certify installation, unattended boot, Windows account isolation, UI Automation, or a real Windows RDP/NLA session. Release acceptance for the new relay route remains open. No installer or production signing key is included.
 
