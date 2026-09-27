@@ -5,9 +5,9 @@
   "targetFramework": "net8.0",
   "windowsTargetFramework": "net8.0-windows",
   "adapterTypeName": "executor://xunit/VsTestRunner2/netcoreapp",
-  "expectedMethodCount": 288,
-  "expectedCaseCount": 349,
-  "canonicalInventorySha256": "0919129ab6006873cac1e232c29475544183df74421b551851578babb02309a1",
+  "expectedMethodCount": 293,
+  "expectedCaseCount": 354,
+  "canonicalInventorySha256": "4ae4af9920a3ae191fe0a75c631676082620feae32c7d36fb904fedcf15b6a23",
   "tests": [
     {
       "key": "JTS.WindowsCompanion.Tests.AutomationContractTests.MutationExecutor_StopsWhenCancellationArrivesDuringFinalPreparation",
@@ -1036,6 +1036,31 @@
     },
     {
       "key": "JTS.WindowsCompanion.Tests.PolicyTests.ShellPolicy_RejectsElevationSecretEnvironmentAndEscapes",
+      "caseCount": 1,
+      "skipPolicy": "never"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PowerShellUtf8Tests.ApprovedBrokerPathPreservesUnicodeScriptStdoutStderrAndExplicitExitCode",
+      "caseCount": 1,
+      "skipPolicy": "windows-integration"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PowerShellUtf8Tests.BothExecutorsKeepTextErrorsAndNonterminatingErrorBehavior",
+      "caseCount": 1,
+      "skipPolicy": "windows-integration"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PowerShellUtf8Tests.BothExecutorsKeepUtf8ByteOutputLimits",
+      "caseCount": 1,
+      "skipPolicy": "windows-integration"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PowerShellUtf8Tests.CurrentUserPreservesUnicodeScriptStdoutStderrAndExplicitExitCode",
+      "caseCount": 1,
+      "skipPolicy": "windows-integration"
+    },
+    {
+      "key": "JTS.WindowsCompanion.Tests.PowerShellUtf8Tests.LaunchContractUsesBomlessUtf8PipesAndOnlyAConstantEncodedBootstrap",
       "caseCount": 1,
       "skipPolicy": "never"
     },

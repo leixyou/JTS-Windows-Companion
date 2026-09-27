@@ -19,6 +19,15 @@ jobs:
             8.0.x
             10.0.401
       - run: dotnet build JTS.WindowsCompanion.sln --configuration Release
+      - name: Verify native PowerShell Unicode and cancellation contracts
+        run: dotnet test tests/JTS.WindowsCompanion.Tests --configuration Release --no-build --filter "FullyQualifiedName~PowerShellUtf8Tests|FullyQualifiedName~ElevatedPowerShellContainmentTests|FullyQualifiedName~ElevationBrokerLeaseCancellationTests" --logger "trx;LogFileName=powershell-utf8.trx" --results-directory "${{ runner.temp }}/jts-powershell-utf8"
+      - name: Preserve native PowerShell evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-powershell-utf8
+          path: ${{ runner.temp }}/jts-powershell-utf8
+          if-no-files-found: error
       - run: dotnet restore JTS.WindowsCompanion.Next.slnx --locked-mode
       - run: dotnet build JTS.WindowsCompanion.Next.slnx --configuration Release --no-restore
       - name: Verify locked self-contained packaging graphs

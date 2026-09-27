@@ -139,14 +139,8 @@ public sealed class CurrentUserPowerShellExecutor
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             CreateNoWindow = true,
-            StandardOutputEncoding = Encoding.UTF8,
-            StandardErrorEncoding = Encoding.UTF8,
         };
-        startInfo.ArgumentList.Add("-NoLogo");
-        startInfo.ArgumentList.Add("-NoProfile");
-        startInfo.ArgumentList.Add("-NonInteractive");
-        startInfo.ArgumentList.Add("-Command");
-        startInfo.ArgumentList.Add("-");
+        PowerShellUtf8LaunchPlan.Configure(startInfo);
         RestrictEnvironment(startInfo, request.Environment);
 
         using var process = new Process { StartInfo = startInfo };

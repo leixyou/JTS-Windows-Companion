@@ -73,14 +73,8 @@ public sealed class ElevatedPowerShellExecutor
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             CreateNoWindow = true,
-            StandardOutputEncoding = Encoding.UTF8,
-            StandardErrorEncoding = Encoding.UTF8,
         };
-        startInfo.ArgumentList.Add("-NoLogo");
-        startInfo.ArgumentList.Add("-NoProfile");
-        startInfo.ArgumentList.Add("-NonInteractive");
-        startInfo.ArgumentList.Add("-Command");
-        startInfo.ArgumentList.Add("-");
+        PowerShellUtf8LaunchPlan.Configure(startInfo);
         RestrictEnvironment(startInfo, action.Environment);
 
         await using var process = _processFactory.Create(startInfo);
