@@ -5,21 +5,30 @@ namespace JTS.WindowsCompanion.Shell;
 
 internal static class PowerShellUtf8LaunchPlan
 {
-    // Only this constant is placed in argv. User scripts stay on the private stdin pipe.
-    // Initialize the decoder before reading any script, including non-ASCII identifiers/literals.
-    internal const string Bootstrap = """
-        $utf8 = New-Object System.Text.UTF8Encoding($false)
-        [Console]::InputEncoding = $utf8
-        [Console]::OutputEncoding = $utf8
-        $OutputEncoding = $utf8
+    // Windows PowerShell 5.1 owns stdin while hosting commands. Do not read Console.In
+    // from an encoded command: use its normal command parser with an ASCII-only envelope.
+    // The UTF-8 user script remains on stdin, never in argv, environment or a temporary file.
+    private const string ScriptPlaceholder = "__JTS_SCRIPT_BASE64__";
+    private const string Bootstrap = """
+        $utf8 = New-Object System.Text.UTF8Encoding($false);
+        [Console]::OutputEncoding = $utf8;
+        $OutputEncoding = $utf8;
         try {
-            $jtsScript = [Console]::In.ReadToEnd()
+            $jtsScript = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('__JTS_SCRIPT_BASE64__'));
             & ([ScriptBlock]::Create($jtsScript + "`nif (-not `$?) { exit 1 }"))
         } catch {
-            [Console]::Error.WriteLine($_.ToString())
+            [Console]::Error.WriteLine($_.ToString());
             exit 1
         }
         """;
+
+    internal static string CreateStandardInput(string script)
+    {
+        var payload = Convert.ToBase64String(Encoding.UTF8.GetBytes(script));
+        // One complete compound statement, followed by an empty line for the stdin parser.
+        return "& { " + string.Join(" ", Bootstrap.Split('\n').Select(line => line.Trim()))
+            .Replace(ScriptPlaceholder, payload, StringComparison.Ordinal) + " }\n\n";
+    }
 
     internal static void Configure(ProcessStartInfo startInfo)
     {
@@ -31,7 +40,7 @@ internal static class PowerShellUtf8LaunchPlan
         startInfo.ArgumentList.Add("-NonInteractive");
         startInfo.ArgumentList.Add("-OutputFormat");
         startInfo.ArgumentList.Add("Text");
-        startInfo.ArgumentList.Add("-EncodedCommand");
-        startInfo.ArgumentList.Add(Convert.ToBase64String(Encoding.Unicode.GetBytes(Bootstrap)));
+        startInfo.ArgumentList.Add("-Command");
+        startInfo.ArgumentList.Add("-");
     }
 }

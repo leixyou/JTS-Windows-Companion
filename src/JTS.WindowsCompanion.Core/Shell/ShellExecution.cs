@@ -150,7 +150,8 @@ public sealed class CurrentUserPowerShellExecutor
             throw new InvalidOperationException("PowerShell could not be started.");
         }
 
-        await process.StandardInput.WriteAsync(request.Script.AsMemory(), cancellationToken).ConfigureAwait(false);
+        var standardInput = PowerShellUtf8LaunchPlan.CreateStandardInput(request.Script);
+        await process.StandardInput.WriteAsync(standardInput.AsMemory(), cancellationToken).ConfigureAwait(false);
         await process.StandardInput.DisposeAsync().ConfigureAwait(false);
 
         var outputTask = ReadBoundedAsync(process.StandardOutput, request.MaximumOutputBytes / 2, cancellationToken);

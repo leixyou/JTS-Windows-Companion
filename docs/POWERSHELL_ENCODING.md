@@ -2,8 +2,10 @@
 
 The current-user DVC executor and approved elevation executor share
 `PowerShellUtf8LaunchPlan`. Both sides of stdin, stdout and stderr explicitly use
-UTF-8 without a byte-order mark. A constant UTF-16LE `-EncodedCommand` bootstrap
-initializes the child encodings before reading the user script from stdin.
+UTF-8 without a byte-order mark. The normal `-Command -` stdin parser receives an
+ASCII-only bootstrap containing the Base64-encoded UTF-8 script. It initializes
+the child's output encoding, decodes the script and executes it. This avoids
+`Console.In.ReadToEnd()` competing with the Windows PowerShell 5.1 host for stdin.
 The user script is never placed in command-line arguments, environment variables
 or a temporary script file. This supports Unicode literals and identifiers as
 well as Unicode PowerShell output on Windows PowerShell 5.1.
@@ -23,5 +25,6 @@ broker test uses a test approval verifier to exercise the real Job Object proces
 path; it does not claim to test interactive UAC consent.
 
 GitHub Windows CI runs this scope and preserves its TRX under
-`windows-powershell-utf8`. The separate independent relay executor already has
-its own UTF-8 bootstrap and is unchanged by this correction.
+`windows-powershell-utf8`. The separate independent relay executor retains its
+own bootstrap and requires its own real Windows acceptance; these results do
+not certify that executor.

@@ -12,7 +12,7 @@ public sealed class PowerShellUtf8Tests
     private const string UnicodeScript = "$名字 = '中文é🚀'; [Console]::Out.Write($名字); [Console]::Error.Write($名字); exit 7";
 
     [Fact]
-    public void LaunchContractUsesBomlessUtf8PipesAndOnlyAConstantEncodedBootstrap()
+    public void LaunchContractKeepsUnicodeBodyOnAsciiStdinAndOnlyFixedArguments()
     {
         var start = new ProcessStartInfo { FileName = "powershell.exe" };
         PowerShellUtf8LaunchPlan.Configure(start);
@@ -22,13 +22,15 @@ public sealed class PowerShellUtf8Tests
             Assert.Equal(65001, encoding.CodePage);
             Assert.Empty(encoding.GetPreamble());
         }
-        Assert.Equal(["-NoLogo", "-NoProfile", "-NonInteractive", "-OutputFormat", "Text", "-EncodedCommand"],
-            start.ArgumentList.Take(6).ToArray());
-        Assert.Equal(7, start.ArgumentList.Count);
-        Assert.Equal(PowerShellUtf8LaunchPlan.Bootstrap,
-            Encoding.Unicode.GetString(Convert.FromBase64String(start.ArgumentList[^1])));
+        Assert.Equal(["-NoLogo", "-NoProfile", "-NonInteractive", "-OutputFormat", "Text", "-Command", "-"],
+            start.ArgumentList.ToArray());
         Assert.DoesNotContain(UnicodeScript, string.Join(' ', start.ArgumentList));
         Assert.DoesNotContain("ExecutionPolicy", string.Join(' ', start.ArgumentList));
+        var input = PowerShellUtf8LaunchPlan.CreateStandardInput(UnicodeScript);
+        Assert.All(input, character => Assert.InRange((int)character, 0, 127));
+        Assert.Contains(Convert.ToBase64String(Encoding.UTF8.GetBytes(UnicodeScript)), input);
+        Assert.DoesNotContain("Console]::In", input);
+        Assert.EndsWith("\n\n", input);
     }
 
     [WindowsIntegrationFact]

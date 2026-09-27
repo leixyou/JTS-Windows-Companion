@@ -93,7 +93,8 @@ public sealed class ElevatedPowerShellExecutor
             await process.StartAsync(linked.Token).ConfigureAwait(false);
             outputTask = output.ReadAsync(process.StandardOutput, linked.Token);
             errorTask = error.ReadAsync(process.StandardError, linked.Token);
-            await process.WriteStandardInputAsync(action.Script.AsMemory(), linked.Token).ConfigureAwait(false);
+            var standardInput = PowerShellUtf8LaunchPlan.CreateStandardInput(action.Script);
+            await process.WriteStandardInputAsync(standardInput.AsMemory(), linked.Token).ConfigureAwait(false);
             await process.WaitForExitAsync(linked.Token).ConfigureAwait(false);
             await Task.WhenAll(outputTask, errorTask).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
