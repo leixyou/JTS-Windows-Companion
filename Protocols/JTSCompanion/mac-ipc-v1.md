@@ -8,7 +8,7 @@ It does not share the FreeRDP parser's address space or identity material.
 ## Caller and ownership
 
 The fixed service ID is `com.lljts.JTSTerminal.CompanionTransportService`.
-Both directions require an Apple-valid signature for team `Q63W79L9FQ`, with the
+Both directions require an Apple-valid signature for the developer-configured Apple team, with the
 exact helper ID and the build-specific main application ID (Debug `.UITesting`,
 Release `com.lljts.JTSTerminal`). There is no Debug/ad-hoc/environment bypass.
 The service is on-demand/application-scoped, with only sandbox and outbound
