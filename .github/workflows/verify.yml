@@ -2,6 +2,9 @@ name: Windows source verification
 on:
   push:
   pull_request:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
@@ -20,6 +23,13 @@ jobs:
       - run: dotnet build JTS.WindowsCompanion.Next.slnx --configuration Release --no-restore
       - run: dotnet test tests/JTS.WindowsCompanion.Control.Tests --configuration Release --no-build
       - run: dotnet test tests/JTS.WindowsCompanion.Relay.Tests --configuration Release --no-build
+      - name: Verify native Windows identity and pinned TLS
+        shell: pwsh
+        run: |
+          $env:JTS_IDENTITY_TEST_ACCOUNT_SID = [System.Security.Principal.WindowsIdentity]::GetCurrent().User.Value
+          $env:JTS_IDENTITY_TEST_DIRECTORY = Join-Path $env:RUNNER_TEMP 'jts-identity-ci'
+          New-Item -ItemType Directory -Path $env:JTS_IDENTITY_TEST_DIRECTORY -Force | Out-Null
+          dotnet test tests/JTS.WindowsCompanion.Pairing.Tests --configuration Release --no-build --filter 'FullyQualifiedName~WindowsIdentityAcceptanceTests|FullyQualifiedName~IdentityTransportTests'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'

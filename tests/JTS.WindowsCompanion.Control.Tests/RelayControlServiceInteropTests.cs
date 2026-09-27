@@ -15,7 +15,7 @@ public sealed class RelayControlServiceInteropTests
     public async Task ActualRelayServiceAcceptsPinnedControlAndRecoversDetachedJobAcrossConnections()
     {
         using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(45));
-        using var controllerCertificate = Certificate(); using var companionCertificate = Certificate();
+        using var controllerCertificate = ControlFixture.Certificate(); using var companionCertificate = ControlFixture.Certificate();
         var controllerIdentity = new RelayEndpointIdentity(controllerCertificate);
         var companionIdentity = new RelayEndpointIdentity(companionCertificate);
         await using var node = new LocalRelayProcess();
@@ -89,13 +89,6 @@ public sealed class RelayControlServiceInteropTests
         Task UntilState(Guid id, DurableJobState state) => RelayServiceFixture.Until(() => f.Get(id).State == state);
     }
     private static bool Ok(JsonDocument response) => response.RootElement.GetProperty("ok").GetBoolean();
-    private static X509Certificate2 Certificate()
-    {
-        using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
-        var request = new CertificateRequest("CN=JTS disposable relay control", key, HashAlgorithmName.SHA256);
-        request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, true));
-        return request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddHours(1));
-    }
 
     private sealed class BusinessFixture : IControlGrantProvider, IJobExecutor, IDisposable
     {

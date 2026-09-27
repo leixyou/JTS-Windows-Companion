@@ -15,7 +15,16 @@ internal static class TransportFixture
         request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, critical: true));
         var usages = new OidCollection { new("1.3.6.1.5.5.7.3.1"), new("1.3.6.1.5.5.7.3.2") };
         request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(usages, critical: true));
-        return request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-5), DateTimeOffset.UtcNow.AddHours(1));
+        var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-5), DateTimeOffset.UtcNow.AddHours(1));
+        if (!OperatingSystem.IsWindows()) return certificate;
+        // Schannel requires a user-key credential, as in the production identity
+        // loader. Do not persist it beyond the returned certificate's lifetime.
+        using (certificate)
+        {
+            var pfx = certificate.Export(X509ContentType.Pkcs12);
+            try { return new X509Certificate2(pfx, (string?)null, X509KeyStorageFlags.UserKeySet); }
+            finally { CryptographicOperations.ZeroMemory(pfx); }
+        }
     }
 
     internal static async Task<(WebSocket Client, WebSocket Server)> WebSocketsAsync()

@@ -60,10 +60,11 @@ internal sealed class ControlFixture : IAsyncDisposable, IControlGrantProvider, 
         using var listener = new TcpListener(IPAddress.Loopback, 0); listener.Start();
         var client = new TcpClient(); await client.ConnectAsync(IPAddress.Loopback, ((IPEndPoint)listener.LocalEndpoint).Port);
         var accepted = await listener.AcceptTcpClientAsync();
+        Exception? serverFailure = null;
         var server = Task.Run(async () =>
         {
             try { await Host.ServeAsync(accepted.GetStream(), ServerIdentity, new(ClientIdentity.DeviceId, policy, [lane]), binding); }
-            catch (Exception error) { SessionErrors.Enqueue(error); }
+            catch (Exception error) { serverFailure = error; SessionErrors.Enqueue(error); }
             finally { accepted.Dispose(); }
         });
         _sessions.Add(server);
@@ -73,7 +74,13 @@ internal sealed class ControlFixture : IAsyncDisposable, IControlGrantProvider, 
                 new(ServerIdentity.DeviceId, policy, [lane]), binding, true);
             return new(client, tls, server, GrantId);
         }
-        catch { client.Dispose(); await server.WaitAsync(TimeSpan.FromSeconds(5)); throw; }
+        catch (Exception clientError)
+        {
+            client.Dispose(); await server.WaitAsync(TimeSpan.FromSeconds(5));
+            if (serverFailure is not null)
+                throw new AggregateException("Control fixture connection failed at both endpoints.", clientError, serverFailure);
+            throw;
+        }
     }
 
     internal object Submission(Guid jobId, string kind = "fixture.echo", bool detached = false, DateTimeOffset? deadline = null, byte[]? payload = null)
@@ -96,12 +103,26 @@ internal sealed class ControlFixture : IAsyncDisposable, IControlGrantProvider, 
         await Host.DisposeAsync(); await Task.WhenAll(_sessions).WaitAsync(TimeSpan.FromSeconds(5));
         Store.Dispose(); DurableGrants?.Dispose(); _protector.Dispose(); _client.Dispose(); _server.Dispose(); _directory.Delete(true);
     }
-    private static X509Certificate2 Certificate()
+    internal static X509Certificate2 Certificate()
     {
         using var key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
         var request = new CertificateRequest("CN=JTS disposable control fixture", key, HashAlgorithmName.SHA256);
         request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, true));
-        return request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddHours(1));
+        var certificate = request.CreateSelfSigned(DateTimeOffset.UtcNow.AddMinutes(-1), DateTimeOffset.UtcNow.AddHours(1));
+        if (!OperatingSystem.IsWindows()) return certificate;
+        // Like the enrolled identity loader, use a lifetime-scoped user key on
+        // Windows: Schannel cannot use CreateSelfSigned's ephemeral private key.
+        // No PersistKeySet or certificate-store registration is requested.
+        using (certificate)
+        {
+            var pfx = certificate.Export(X509ContentType.Pkcs12);
+            try
+            {
+                return X509CertificateLoader.LoadPkcs12(pfx, (string?)null, X509KeyStorageFlags.UserKeySet,
+                    new Pkcs12LoaderLimits { MaxCertificates = 1, MaxKeys = 1 });
+            }
+            finally { CryptographicOperations.ZeroMemory(pfx); }
+        }
     }
 }
 

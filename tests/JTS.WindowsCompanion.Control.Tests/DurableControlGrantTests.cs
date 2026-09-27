@@ -15,12 +15,16 @@ public sealed class DurableControlGrantTests
             Assert.Equal(f.Clock.GetUtcNow(), record.ApprovedAt); Assert.Null(record.RevokedAt);
             Assert.Same(record.Grant, grant);
         }
-        using var reopened = f.Open();
-        var restored = await reopened.FindAsync(f.Owner, grant.GrantId, default);
-        Assert.NotNull(restored); Assert.True(ControlPolicyCodec.SameGrant(grant, restored));
-        Assert.Null(await reopened.FindAsync(new string('b', 64), grant.GrantId, default));
-        Assert.Equal(1L, f.Sql("PRAGMA user_version;"));
-        Assert.Equal("wal", f.Sql("PRAGMA journal_mode;"));
+        using (var reopened = f.Open())
+        {
+            var restored = await reopened.FindAsync(f.Owner, grant.GrantId, default);
+            Assert.NotNull(restored); Assert.True(ControlPolicyCodec.SameGrant(grant, restored));
+            Assert.Null(await reopened.FindAsync(new string('b', 64), grant.GrantId, default));
+            Assert.Equal(1L, f.Sql("PRAGMA user_version;"));
+            Assert.Equal("wal", f.Sql("PRAGMA journal_mode;"));
+        }
+        // Close SQLite before inspecting its checkpointed bytes. Windows denies
+        // File.ReadAllBytes' share mode while a write-capable connection is open.
         Assert.DoesNotContain("fixture.sensitive_permission", Encoding.UTF8.GetString(File.ReadAllBytes(f.Path)));
     }
 
