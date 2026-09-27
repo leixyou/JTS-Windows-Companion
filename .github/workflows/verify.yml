@@ -23,6 +23,10 @@ jobs:
       - run: dotnet build JTS.WindowsCompanion.Next.slnx --configuration Release --no-restore
       - run: dotnet test tests/JTS.WindowsCompanion.Control.Tests --configuration Release --no-build
       - run: dotnet test tests/JTS.WindowsCompanion.Relay.Tests --configuration Release --no-build
+      - run: dotnet test tests/JTS.WindowsCompanion.UnattendedInstallation.Tests --configuration Release --no-build
+      - name: Verify connection wrapper on Windows PowerShell 5.1
+        shell: powershell
+        run: ./scripts/tests/test-connection-package-plan.ps1
       - name: Verify native Windows identity and pinned TLS
         shell: pwsh
         run: |

@@ -32,7 +32,13 @@ authenticated payload checks, separate standard Authority/Worker accounts and
 their private ACL/DPAPI boundaries remain mandatory. No arguments opens the
 existing interactive installer.
 
-The strict request has exactly these fields:
+The strict request requires the following fields. It also accepts the optional
+boolean `allowWindows10TLS12`; omission or `false` selects TLS 1.3. For Windows 10
+and Windows Server 2019, explicitly generate the Mac request with this field set
+to `true`. The pinned request SHA-256 covers that choice, which is stored with the
+pairing and exported back to the Mac. TLS 1.2 compatibility retains pinned mutual
+authentication, ALPN and the approved ECDHE-ECDSA/AES-GCM cipher suites. There is
+no automatic protocol downgrade or handshake-failure fallback.
 
 ```json
 {
@@ -60,12 +66,35 @@ exact controller/grant IDs. There is no network enrollment RPC.
 
 Success exports public JSON with `version`, `name`, `installationState` equal to
 `installedAwaitingRelayAdmission`, `relayURL`, `peerSPKIBase64`, `peerDeviceID`,
-`pairingID`, `grantID`, `fileGrantID` and `rdpGrantID`. The node owner must admit the
+`pairingID`, `grantID`, `fileGrantID`, `rdpGrantID` and `allowWindows10TLS12`. The node owner must admit the
 exact public controller/companion identities and peer relationship. Until first
 successful presence, the Authority waits with cancellable 1–30 second backoff on
 401/403; no business session is authorized. After admission, loss of node authority
 retains the existing fatal policy. Mac enrollment verifies real `device.status`
 with the control grant before binding the target.
+
+## Combined private test package
+
+The combined package places the current-user and independent installers in
+`current-user/JTS.WindowsCompanion.Setup.exe` and
+`independent/JTS.WindowsCompanion.Setup.exe`, with a hash-pinned
+`connection-package.json` and `Connect-RelayWindows.ps1` at its root. Extract the
+entire package before use. The wrapper supports Windows PowerShell 5.1.
+
+For a console-first relay installation, run the wrapper as the intended logged-in
+user, using `-RelayOnly`, the fresh request, its Mac-provided SHA-256 and the
+relay HTTPS origin. The independent installer requests UAC when needed; an already
+elevated interactive administrator is also accepted in this mode. SYSTEM is
+always rejected.
+After relay admission and a successful RDP connection, run the current-user EXE
+inside that RDP session to install the semantic UIA Agent. The current-user
+installer requires a live DVC channel; its absence is a failure after installation
+commit and must not be treated as successful readiness.
+
+Without `-RelayOnly`, the wrapper installs the current-user Agent first, then the
+independent endpoint. This mode therefore requires an active RDP session. For
+LAN-only testing, connect RDP first and run only the current-user EXE in the remote
+session; the independent service and relay request are unnecessary.
 
 ## Business channels
 

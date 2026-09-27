@@ -33,7 +33,7 @@ public static class WindowsUnattendedInstaller
     private static async Task<InstalledUnattendedSupport> InstallWindowsAsync(string bundleDirectory, Uri relayOrigin, byte[]? delegationBytes, CancellationToken stop)
     {
         stop.ThrowIfCancellationRequested();
-        using var token = WindowsIdentity.GetCurrent(TokenAccessLevels.Query);
+        using var token = OpenIdentityForMembershipChecks();
         using var process = Process.GetCurrentProcess();
         if (!Environment.UserInteractive || process.SessionId == 0 || token.IsSystem || token.ImpersonationLevel != TokenImpersonationLevel.None
             || !new WindowsPrincipal(token).IsInRole(WindowsBuiltInRole.Administrator))
@@ -56,12 +56,15 @@ public static class WindowsUnattendedInstaller
         using var actions = new WindowsInstallationActions(enrollment, storage, payload, delegationBytes);
         var installed = await new FirstInstallation(journal, actions).RunAsync(stop).ConfigureAwait(false);
         // SCM Running is local startup only; no peer is paired and no public/Windows acceptance is claimed here.
-        var exported = delegation is null ? null : JsonSerializer.Serialize(new { version = 1, name = Environment.MachineName,
-            installationState = "installedAwaitingRelayAdmission",
-            relayURL = installed.RelayOrigin, peerSPKIBase64 = actions.PublicKeySpkiBase64, peerDeviceID = installed.DeviceId,
-            pairingID = delegation.PairingID, grantID = delegation.GrantID, fileGrantID = delegation.FileGrantID, rdpGrantID = delegation.RdpGrantID });
+        var exported = delegation is null ? null : RelayEnrollmentExport.Create(Environment.MachineName,
+            installed.RelayOrigin, actions.PublicKeySpkiBase64, installed.DeviceId, delegation);
         return new(installed.EnrollmentId, installed.DeviceId!, installed.RelayOrigin, exported);
     }
+    [SupportedOSPlatform("windows")]
+    internal static WindowsIdentity OpenIdentityForMembershipChecks()
+        // IsInRole duplicates the current token to query effective membership; Query-only handles fail on Windows.
+        => WindowsIdentity.GetCurrent(TokenAccessLevels.Query | TokenAccessLevels.Duplicate);
+
     [DllImport("user32.dll", EntryPoint = "MessageBoxW", CharSet = CharSet.Unicode)]
     private static extern int MessageBox(IntPtr window, string text, string caption, uint type);
 }

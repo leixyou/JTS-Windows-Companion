@@ -7,7 +7,8 @@ namespace JTS.WindowsCompanion.Pairing;
 
 /// <summary>Public owner-delegated installation input. A node or remote RPC cannot import it.</summary>
 public sealed record RelayDelegatedEnrollment(string ControllerDeviceID, string ControllerSPKIBase64,
-    Guid PairingID, Guid GrantID, Guid FileGrantID, Guid RdpGrantID, DateTimeOffset IssuedAtUtc, DateTimeOffset ExpiresAtUtc)
+    Guid PairingID, Guid GrantID, Guid FileGrantID, Guid RdpGrantID, DateTimeOffset IssuedAtUtc, DateTimeOffset ExpiresAtUtc,
+    bool AllowWindows10TLS12 = false)
 {
     public const int MaximumBytes = 8192;
     public static RelayDelegatedEnrollment Parse(byte[] bytes, TimeProvider? clock = null)
@@ -18,9 +19,10 @@ public sealed record RelayDelegatedEnrollment(string ControllerDeviceID, string 
             _ = new UTF8Encoding(false, true).GetString(bytes);
             using var json = JsonDocument.Parse(bytes, new JsonDocumentOptions { MaxDepth = 2 }); var p = json.RootElement;
             var fields = new HashSet<string>(["version", "authorizationSource", "authorizationReference", "controllerDeviceID", "controllerSPKIBase64",
-                "pairingID", "grantID", "fileGrantID", "rdpGrantID", "issuedAtUtc", "expiresAtUtc"], StringComparer.Ordinal);
+                "pairingID", "grantID", "fileGrantID", "rdpGrantID", "issuedAtUtc", "expiresAtUtc", "allowWindows10TLS12"], StringComparer.Ordinal);
             if (p.ValueKind != JsonValueKind.Object) throw Invalid();
             foreach (var entry in p.EnumerateObject()) if (!fields.Remove(entry.Name)) throw Invalid();
+            fields.Remove("allowWindows10TLS12"); // Optional and false unless explicitly authorized in this hashed request.
             if (fields.Count != 0 || p.GetProperty("version").GetInt32() != 1 || Text(p, "authorizationSource") != "ownerDelegated"
                 || Text(p, "authorizationReference") != "device-ai-control-enabled") throw Invalid();
             var device = Text(p, "controllerDeviceID"); PairingValidation.Device(device);
@@ -28,8 +30,11 @@ public sealed record RelayDelegatedEnrollment(string ControllerDeviceID, string 
             if (spki.Length is < 1 or > 512 || Convert.ToBase64String(spki) != encoded || Convert.ToHexStringLower(SHA256.HashData(spki)) != device) throw Invalid();
             using var key = ECDsa.Create(); key.ImportSubjectPublicKeyInfo(spki, out var used);
             if (used != spki.Length || key.KeySize != 256 || key.ExportParameters(false).Curve.Oid.Value != "1.2.840.10045.3.1.7") throw Invalid();
+            var allowTls12 = p.TryGetProperty("allowWindows10TLS12", out var compatibility)
+                ? compatibility.ValueKind is JsonValueKind.True or JsonValueKind.False ? compatibility.GetBoolean() : throw Invalid()
+                : false;
             var request = new RelayDelegatedEnrollment(device, encoded, Id(p, "pairingID"), Id(p, "grantID"), Id(p, "fileGrantID"), Id(p, "rdpGrantID"),
-                p.GetProperty("issuedAtUtc").GetDateTimeOffset(), p.GetProperty("expiresAtUtc").GetDateTimeOffset());
+                p.GetProperty("issuedAtUtc").GetDateTimeOffset(), p.GetProperty("expiresAtUtc").GetDateTimeOffset(), allowTls12);
             if (new[] { request.PairingID, request.GrantID, request.FileGrantID, request.RdpGrantID }.Distinct().Count() != 4) throw Invalid();
             request.RequireCurrent(clock ?? TimeProvider.System); return request;
         }
@@ -42,7 +47,8 @@ public sealed record RelayDelegatedEnrollment(string ControllerDeviceID, string 
         if (IssuedAtUtc.Offset != TimeSpan.Zero || ExpiresAtUtc.Offset != TimeSpan.Zero || IssuedAtUtc > now || ExpiresAtUtc <= now
             || ExpiresAtUtc <= IssuedAtUtc || ExpiresAtUtc - IssuedAtUtc > TimeSpan.FromMinutes(30)) throw Invalid();
     }
-    public RelayDevicePairing Pairing() => new(PairingID, ControllerDeviceID, RelayTlsPolicy.Tls13, DateTimeOffset.MaxValue,
+    public RelayDevicePairing Pairing() => new(PairingID, ControllerDeviceID,
+        AllowWindows10TLS12 ? RelayTlsPolicy.ExplicitWindows10Tls12 : RelayTlsPolicy.Tls13, DateTimeOffset.MaxValue,
         [RelayLane.Control, RelayLane.File, RelayLane.Rdp], new Dictionary<RelayLane, IReadOnlyList<Guid>>
         { [RelayLane.Control] = [GrantID], [RelayLane.File] = [FileGrantID], [RelayLane.Rdp] = [RdpGrantID] });
     private static string Text(JsonElement p, string name) => p.GetProperty(name).GetString() is { Length: > 0 and <= 1024 } text ? text : throw Invalid();
