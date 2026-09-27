@@ -5,12 +5,13 @@ namespace JTS.WindowsCompanion.Shell;
 
 internal static class PowerShellUtf8LaunchPlan
 {
-    // Windows PowerShell 5.1 owns stdin while hosting commands. Do not read Console.In
-    // from an encoded command: use its normal command parser with an ASCII-only envelope.
+    // Let the host parse an ASCII-only envelope without depending on its input code page
+    // or raw Console.In buffering. -Command also avoids encoded-command CLIXML errors.
     // The UTF-8 user script remains on stdin, never in argv, environment or a temporary file.
     private const string ScriptPlaceholder = "__JTS_SCRIPT_BASE64__";
     private const string Bootstrap = """
-        $utf8 = New-Object System.Text.UTF8Encoding($false);
+        $ProgressPreference = 'SilentlyContinue';
+        $utf8 = [Text.UTF8Encoding]::new($false);
         [Console]::OutputEncoding = $utf8;
         $OutputEncoding = $utf8;
         try {

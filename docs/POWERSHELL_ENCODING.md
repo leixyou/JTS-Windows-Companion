@@ -4,8 +4,8 @@ The current-user DVC executor and approved elevation executor share
 `PowerShellUtf8LaunchPlan`. Both sides of stdin, stdout and stderr explicitly use
 UTF-8 without a byte-order mark. The normal `-Command -` stdin parser receives an
 ASCII-only bootstrap containing the Base64-encoded UTF-8 script. It initializes
-the child's output encoding, decodes the script and executes it. This avoids
-`Console.In.ReadToEnd()` competing with the Windows PowerShell 5.1 host for stdin.
+the child's output encoding, decodes the script and executes it. No raw
+`Console.In` read or matching host input code page is needed for Unicode scripts.
 The user script is never placed in command-line arguments, environment variables
 or a temporary script file. This supports Unicode literals and identifiers as
 well as Unicode PowerShell output on Windows PowerShell 5.1.
@@ -14,6 +14,9 @@ The bootstrap keeps the user's error preference unchanged, requests text output
 instead of CLIXML, and reports a failed final command or terminating exception as
 exit 1. An explicit `exit N` remains the script's exit code. The launch still uses
 `-NoProfile` and `-NonInteractive`, and does not bypass execution policy.
+Progress is suppressed in this child session before any module loads, preventing
+Windows PowerShell 5.1 from mixing serialized progress records into stderr.
+The user script can explicitly set its own `$ProgressPreference` when needed.
 Existing authorization, cancellation, process containment and byte-output limits
 remain owned by their respective executors.
 

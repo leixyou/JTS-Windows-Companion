@@ -66,6 +66,10 @@ public sealed class PowerShellUtf8Tests
             var recovered = await ExecuteAsync("& $env:COMSPEC /d /c 'exit 7'; Write-Output 'continued'", broker);
             Assert.Equal(0, recovered.ExitCode);
             Assert.Contains("continued", recovered.StandardOutput);
+            var progress = await ExecuteAsync("Write-Progress -Activity '中文 progress' -PercentComplete 10; Write-Output 'continued'", broker);
+            Assert.Equal(0, progress.ExitCode);
+            Assert.Contains("continued", progress.StandardOutput);
+            Assert.Empty(progress.StandardError);
         }
     }
 
@@ -101,16 +105,23 @@ public sealed class PowerShellUtf8Tests
     {
         using var directory = new TemporaryDirectory();
         using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        ShellExecutionResult result;
         if (approvedBrokerPath)
         {
             var executor = new ElevatedPowerShellExecutor(new TestApprovedBrokerVerifier());
-            return await executor.ExecuteAsync(new ElevatedPowerShellActionDescriptor("utf8-test", script, directory.Path,
+            result = await executor.ExecuteAsync(new ElevatedPowerShellActionDescriptor("utf8-test", script, directory.Path,
                 15000, maximumOutputBytes, new Dictionary<string, string>(),
                 [new ResolvedElevationDataScope("test", directory.Path, ElevationScopeAccess.ReadWrite)]), cancellation.Token);
         }
-        var policy = new CurrentUserShellPolicy(new FileSandbox([new FileRoot("test", directory.Path)]));
-        return await new CurrentUserPowerShellExecutor(policy).ExecuteAsync(
-            new ShellExecutionRequest(script, "test", ".", 15000, maximumOutputBytes), cancellation.Token);
+        else
+        {
+            var policy = new CurrentUserShellPolicy(new FileSandbox([new FileRoot("test", directory.Path)]));
+            result = await new CurrentUserPowerShellExecutor(policy).ExecuteAsync(
+                new ShellExecutionRequest(script, "test", ".", 15000, maximumOutputBytes), cancellation.Token);
+        }
+        Assert.False(result.TimedOut,
+            $"Synthetic PowerShell timed out: exit={result.ExitCode}; stdout={result.StandardOutput}; stderr={result.StandardError}");
+        return result;
     }
 
     private sealed class TestApprovedBrokerVerifier : IProcessElevationVerifier

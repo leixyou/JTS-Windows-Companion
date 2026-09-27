@@ -18,16 +18,34 @@ $variants = @(
     @{Name='encoded-console'; Encoded=$true; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole},
     @{Name='encoded-raw-stream'; Encoded=$true; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readRaw},
     @{Name='command-console'; Encoded=$false; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole},
-    @{Name='command-raw-stream'; Encoded=$false; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readRaw}
+    @{Name='command-raw-stream'; Encoded=$false; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readRaw},
+    @{Name='encoded-console-restricted'; Encoded=$true; Restricted=$true; AsyncClose=$true; Relative=$true; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole},
+    @{Name='encoded-console-system-modules'; Encoded=$true; Restricted=$true; SystemModules=$true; AsyncClose=$true; Relative=$true; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole},
+    @{Name='command-console-restricted'; Encoded=$false; Restricted=$true; AsyncClose=$true; Relative=$true; Body=$prefix + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole},
+    @{Name='command-console-restricted-no-module'; Encoded=$false; Restricted=$true; AsyncClose=$true; Relative=$true; Body=('$ProgressPreference=''SilentlyContinue'';' + $prefix.Replace('New-Object System.Text.UTF8Encoding($false)', '[Text.UTF8Encoding]::new($false)') + "`n[Console]::Error.WriteLine('JTS:read-start')`n" + $readConsole)}
 )
 foreach ($variant in $variants) {
     $start = [Diagnostics.ProcessStartInfo]::new()
     $start.FileName = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+    if ($variant.Relative) { $start.FileName = 'powershell.exe' }
+    $start.WorkingDirectory = $env:TEMP
     $start.UseShellExecute = $false; $start.CreateNoWindow = $true
     $start.RedirectStandardInput = $true; $start.RedirectStandardOutput = $true; $start.RedirectStandardError = $true
     $start.StandardInputEncoding = [Text.UTF8Encoding]::new($false)
     $start.StandardOutputEncoding = [Text.UTF8Encoding]::new($false)
     $start.StandardErrorEncoding = [Text.UTF8Encoding]::new($false)
+    if ($variant.Restricted) {
+        $inherited = @{}
+        foreach ($name in @('SystemRoot','WINDIR','TEMP','TMP','PATH','PATHEXT','COMSPEC','USERPROFILE','LOCALAPPDATA','APPDATA')) {
+            $value = [Environment]::GetEnvironmentVariable($name)
+            if ($null -ne $value) { $inherited[$name] = $value }
+        }
+        $start.Environment.Clear()
+        foreach ($name in $inherited.Keys) { $start.Environment[$name] = $inherited[$name] }
+        if ($variant.SystemModules) {
+            $start.Environment['PSModulePath'] = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\Modules'
+        }
+    }
     foreach ($argument in @('-NoLogo','-NoProfile','-NonInteractive','-OutputFormat','Text')) { $start.ArgumentList.Add($argument) }
     $body = $variant.Body + "`n[Console]::Error.WriteLine('JTS:read-done'); & ([ScriptBlock]::Create(`$code)); [Console]::Error.WriteLine('JTS:eval-done')"
     if ($variant.Encoded) {
@@ -38,7 +56,12 @@ foreach ($variant in $variants) {
     $watch = [Diagnostics.Stopwatch]::StartNew(); [void]$process.Start()
     $stdout = $process.StandardOutput.ReadToEndAsync(); $stderr = $process.StandardError.ReadToEndAsync()
     $inputError = $null
-    try { $process.StandardInput.Write($sample); $process.StandardInput.Close() }
+    try {
+        if ($variant.AsyncClose) {
+            $process.StandardInput.WriteAsync($sample).GetAwaiter().GetResult()
+            $process.StandardInput.DisposeAsync().AsTask().GetAwaiter().GetResult()
+        } else { $process.StandardInput.Write($sample); $process.StandardInput.Close() }
+    }
     catch { $inputError = $_.Exception.GetType().Name }
     $done = $process.WaitForExit(8000)
     if (-not $done) { $process.Kill($true); [void]$process.WaitForExit(5000) }
