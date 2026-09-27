@@ -31,11 +31,14 @@ def options(argv=None):
     parser.add_argument("--release-key", type=Path, help="External protected P-256 private key; never packaged")
     parser.add_argument("--release-id", default="2.5.0-preview.1")
     parser.add_argument("--development", action="store_true", help="Disposable key, explicitly non-distributable output")
+    parser.add_argument("--authorized-lab", action="store_true", help="Explicit owner-authorized test handoff; requires --development")
     parser.add_argument("--mingw-prefix", help="Cross compiler prefix (development only), e.g. x86_64-w64-mingw32-")
     return parser.parse_args(argv)
 
 
 def validate(args):
+    if args.authorized_lab and not args.development:
+        raise ValueError("Authorized lab handoff requires a disposable development key")
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", args.release_id):
         raise ValueError("Invalid release ID")
     if args.development == bool(args.release_key):
@@ -144,30 +147,37 @@ def build(args):
             raise ValueError("Native bootstrap output missing or ambiguous")
         with outputs[0].open("rb") as stream, mmap.mmap(stream.fileno(), 0, access=mmap.ACCESS_READ) as binary:
             native_evidence = inspect_bootstrap(binary, payload_files(payload, with_manifest=True))
-        marker = "DEVELOPMENT-NOT-FOR-DISTRIBUTION" if args.development else "RELEASE-CANDIDATE"
+        marker = "AUTHORIZED-LAB-ONLY" if args.authorized_lab else "DEVELOPMENT-NOT-FOR-DISTRIBUTION" if args.development else "RELEASE-CANDIDATE"
         name = f"JTS-Windows-Companion-2.5-{marker}-win-x64.exe"
         with outputs[0].open("rb") as source, (args.output / name).open("xb") as destination:
             shutil.copyfileobj(source, destination)
-        evidence = {"kind": marker, "sdk": sdk, "releaseId": release_id, "nativeWindowsExecuted": False,
+        evidence = {"kind": marker, "authorizedLabHandoff": args.authorized_lab, "sdk": sdk, "releaseId": release_id, "nativeWindowsExecuted": False,
                     "authenticode": False, "bootstrapSha256": digest(args.output / name),
                     "releaseVerification": verification, "nativeBootstrap": native_evidence, "managedBundles": bundle_evidence,
                     "payload": [{"name": p.name, "size": p.stat().st_size, "sha256": digest(p)} for p in payload_files(payload, with_manifest=True)]}
         (args.output / "packaging-evidence.json").write_text(json.dumps(evidence, indent=2) + "\n", encoding="utf-8")
         (args.output / "README.txt").write_text(
-            f"{marker}\nJTS Terminal 2.5 optional unattended FIRST INSTALL candidate.\n"
+            f"{marker}\nJTS Terminal 2.5 Windows enrollment candidate.\n"
             "Run only the outer EXE on an explicitly authorized Windows x64 test machine.\n"
             "UAC elevation is required. Interactive setup remains available with no arguments.\n"
+            "Open the outer EXE, paste the one-use code from Mac Companion Devices, and select Connect.\n"
+            "First use installs Authority/Worker; later uses open the installed enrollment manager.\n"
+            "Use --manage for the manager, --status for structured status, or --enroll-code with the code on stdin only.\n"
+            "Keep the Mac access-code sheet open or poll jts_device_status action=codeStatus until complete.\n"
+            "Binding does not require RDP login. Unbound codes expire after 30 minutes; bound device authorization lasts until revoked.\n"
+            "A new enrollment-enabled relay admits Windows dynamically without JSON editing or restart.\n"
+            "Legacy public-request installation remains available:\n"
             "Owner-delegated setup imports the exact Mac public identity and lane grants without a second pairing prompt:\n"
             "  EXE --relay https://relay.example.com:8443 --delegated-enrollment C:\\path\\request.json --sha256 REQUEST_SHA256 --export C:\\path\\enrollment.json\n"
             "All file arguments are absolute; export must be a new file. Request lifetime is at most 30 minutes.\n"
             "HTTPS/WSS transport stays encrypted; outer certificate PKI checks are skipped by default. Inner pinned mutual TLS is mandatory.\n"
-            "Success exports installedAwaitingRelayAdmission plus public identity. The node owner must admit that exact device before connection.\n"
+            "The legacy file flow exports installedAwaitingRelayAdmission and requires manual node admission.\n"
             "Control uses a dedicated Worker account; files use ProgramData\\JTS Terminal\\Companion25\\shared; RDP bridges only 127.0.0.1:3389.\n"
             "No RDP listener/firewall/account policy is silently enabled. No upgrade, uninstall or automatic repair is supplied.\n"
             "Native Windows acceptance and the complete 2.5 release gates remain open.\n"
             "Authenticode is absent. Do not disable SmartScreen or organization policy.\n"
             "Obtain the expected installer digest through an independently trusted distribution channel.\n"
-            + ("Disposable release key; never distribute or embed in the Mac app.\n" if args.development else "Designated release key; not evidence of release acceptance.\n"), encoding="utf-8")
+            + ("Disposable test key; hand off only to the owner's explicitly authorized test computers. Not a public release.\n" if args.authorized_lab else "Disposable release key; never distribute or embed in the Mac app.\n" if args.development else "Designated release key; not evidence of release acceptance.\n"), encoding="utf-8")
         (args.output / "SHA256SUMS").write_text(f"{digest(args.output / name)}  {name}\n", encoding="ascii")
         with zipfile.ZipFile(args.output / f"{Path(name).stem}.zip", "x", compression=zipfile.ZIP_DEFLATED) as archive:
             for item in (name, "README.txt", "SHA256SUMS", "packaging-evidence.json"):

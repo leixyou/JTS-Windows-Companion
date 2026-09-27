@@ -39,13 +39,8 @@ public static class WindowsUnattendedInstaller
             || !new WindowsPrincipal(token).IsInRole(WindowsBuiltInRole.Administrator))
             throw new UnattendedInstallationException("INSTALL_INTERACTIVE_ELEVATED_ADMIN_REQUIRED");
         using var payload = new InstallationPayload(bundleDirectory);
-        var question = "Install JTS Terminal 2.5 unattended support?\n\n"
-            + "This creates two dedicated standard Windows accounts, installs an automatically started network service and a separate on-demand script Worker. "
-            + "Remote access still requires separate device pairing and capability approval. Existing 2.0 setup is not replaced.\n\n"
-            + "Relay: " + relayOrigin.AbsoluteUri + "\n\nContinue with this installation?";
-        // Default is No. Setup host must already have completed the Windows elevation flow; no silent/replayed consent switch exists.
-        if (delegationBytes is null && MessageBox(IntPtr.Zero, question, "JTS Terminal — Optional unattended installation", 0x4 | 0x30 | 0x100) != 6)
-            throw new OperationCanceledException("INSTALL_LOCAL_CONSENT_DECLINED", stop);
+        // The local setup action (or its explicit CLI) authorizes installation. Windows elevation is still required.
+        // Pairing is delegated by the owner's existing AI-control setting, not another confirmation dialog.
         stop.ThrowIfCancellationRequested();
         var enrollment = Guid.NewGuid();
         using var storage = new WindowsInstallationStorage(enrollment);
@@ -65,6 +60,4 @@ public static class WindowsUnattendedInstaller
         // IsInRole duplicates the current token to query effective membership; Query-only handles fail on Windows.
         => WindowsIdentity.GetCurrent(TokenAccessLevels.Query | TokenAccessLevels.Duplicate);
 
-    [DllImport("user32.dll", EntryPoint = "MessageBoxW", CharSet = CharSet.Unicode)]
-    private static extern int MessageBox(IntPtr window, string text, string caption, uint type);
 }

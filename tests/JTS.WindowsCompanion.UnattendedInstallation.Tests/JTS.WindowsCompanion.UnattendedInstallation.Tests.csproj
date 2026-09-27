@@ -8,9 +8,15 @@
   <ItemGroup>
     <Compile Include="../../src/JTS.WindowsCompanion.UnattendedSetup/RelayOriginInput.cs" Link="Setup/RelayOriginInput.cs" />
     <Compile Include="../../src/JTS.WindowsCompanion.UnattendedSetup/SetupFailure.cs" Link="Setup/SetupFailure.cs" />
+    <Compile Include="../../src/JTS.WindowsCompanion.UnattendedSetup/SetupEntryArguments.cs" Link="Setup/SetupEntryArguments.cs" />
+    <Compile Include="../../src/JTS.WindowsCompanion.UnattendedSetup/EnrollmentCodeInput.cs" Link="Setup/EnrollmentCodeInput.cs" />
+    <Compile Include="../../src/JTS.WindowsCompanion.UnattendedSetup/EnrollmentPresentation.cs" Link="Setup/EnrollmentPresentation.cs" />
+    <Compile Include="../../src/JTS.WindowsCompanion.UnattendedSetup/EnrollmentFailure.cs" Link="Setup/EnrollmentFailure.cs" />
+    <Compile Include="../../src/JTS.WindowsCompanion.UnattendedSetup/EnrollmentEntryWorkflow.cs" Link="Setup/EnrollmentEntryWorkflow.cs" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"><PrivateAssets>all</PrivateAssets></PackageReference>
     <ProjectReference Include="../../src/JTS.WindowsCompanion.UnattendedInstallation/JTS.WindowsCompanion.UnattendedInstallation.csproj" />
+    <ProjectReference Include="../../src/JTS.WindowsCompanion.Enrollment/JTS.WindowsCompanion.Enrollment.csproj" />
   </ItemGroup>
 </Project>

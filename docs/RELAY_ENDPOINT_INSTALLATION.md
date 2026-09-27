@@ -12,7 +12,45 @@ requires the exact enrolled P-256 SPKI, certificate checks, mutual authenticatio
 ALPN and exact session/lane binding. `validateOuterCertificate:true` opts back into
 OS trust. The independent relay protocol snapshot is unchanged.
 
-## One authorized enrollment
+## One-use connection code
+
+Open the new installer without arguments, or use `--manage`, to open the Windows
+connection manager. Paste the complete code from an AI-enabled device in the Mac
+app and select **Connect**. On a new computer, the code supplies the HTTPS relay
+origin; setup installs the local services and then sends the code over the
+authenticated administrator-only local management pipe. There is no second
+pairing approval. Windows UAC and authenticated payload checks still apply.
+On an installed computer, the same entry opens its existing service state instead
+of reinstalling or replacing its database. Codes are masked in the UI and cleared
+after the service accepts them; they are never printed as public identifiers.
+
+You can also install before obtaining a code: enter a relay HTTPS root address
+and select **Install without pairing**. Return to the same manager when the code
+is available. The manager polls the protected service every two seconds and can
+cancel an unfinished attempt or revoke a bound device. It never directly writes
+the Authority's pairing or credential stores.
+
+The command-line alternative must run from an **already elevated, interactive
+administrator shell**. `--status` prints safe public JSON; `--enroll-code` reads
+exactly one line of standard input, limited to 4096 characters. Supply the code
+through a private pipe or prompt, never as an argument or a saved file. The
+native bootstrap passes only duplicated stdin/stdout/stderr handles to its
+authenticated child. A pending result means the protected service has saved the
+attempt, not that end-to-end control has passed. CLI status reports
+`rdpStatus:"notChecked"` independently from pairing.
+
+Pairing does **not** require a successful RDP login. A failed RDP login does not
+consume an unbound, unexpired code. After binding, the device's credentials and
+permissions survive reconnects and code expiry until explicitly revoked. RDP
+still needs a configured listener and valid Windows login credentials; the
+manager does not change RDP/NLA/firewall policy or claim those checks passed.
+
+An older installation without the enrollment management pipe cannot be managed
+by this new entry point. Setup preserves it and reports the service unavailable;
+it does not run first-install over the existing services or records. Updating
+those older diagnostic installations remains a separate migration operation.
+
+## Explicit public-request enrollment
 
 Export a fresh public request from the Mac target whose AI-control setting is
 enabled. That setting is the owner's delegated authority; a second pairing dialog
@@ -29,8 +67,8 @@ is not required. Pass these arguments to the outer native installer, in this ord
 The request and export paths must be absolute and not traverse reparse points.
 Export is create-new; an existing file is never overwritten. UAC elevation,
 authenticated payload checks, separate standard Authority/Worker accounts and
-their private ACL/DPAPI boundaries remain mandatory. No arguments opens the
-existing interactive installer.
+their private ACL/DPAPI boundaries remain mandatory. The explicit public-request
+CLI remains a separate first-install compatibility route.
 
 The strict request requires the following fields. It also accepts the optional
 boolean `allowWindows10TLS12`; omission or `false` selects TLS 1.3. For Windows 10

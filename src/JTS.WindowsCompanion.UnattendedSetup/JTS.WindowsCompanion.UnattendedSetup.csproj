@@ -22,6 +22,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../JTS.WindowsCompanion.UnattendedInstallation/JTS.WindowsCompanion.UnattendedInstallation.csproj" />
+    <ProjectReference Include="../JTS.WindowsCompanion.Enrollment/JTS.WindowsCompanion.Enrollment.csproj" />
   </ItemGroup>
   <Target Name="RequireEmbeddedCompanionReleaseKey" BeforeTargets="Publish">
     <Error Condition="'$(CompanionReleasePublicKeyPath)' == '' Or !Exists('$(CompanionReleasePublicKeyPath)')"

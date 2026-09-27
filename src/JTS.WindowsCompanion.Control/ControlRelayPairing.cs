@@ -19,6 +19,7 @@ public sealed record ControlRelayPairing
         ExpiresAt = DateTimeOffset.FromUnixTimeMilliseconds(expiresAt.ToUnixTimeMilliseconds());
     }
     public bool IncludesGrant(Guid grantId) => _grants.Contains(grantId);
+    internal IReadOnlyCollection<Guid> ApprovedGrantIds => _grants.ToArray();
     internal bool SamePolicy(ControlRelayPairing other) => PairingId == other.PairingId && Trust.DeviceId == other.Trust.DeviceId
         && Trust.TlsPolicy == other.Trust.TlsPolicy && ExpiresAt == other.ExpiresAt && _grants.SetEquals(other._grants)
         && Enum.GetValues<RelayLane>().All(lane => Trust.Allows(lane) == other.Trust.Allows(lane));

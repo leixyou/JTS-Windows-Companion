@@ -38,6 +38,11 @@ existing fixed-operation VRC/managed providers.
    this cancels all of that owner's grants/jobs, including detached work, and
    rejects submission/dispatch races without affecting another owner. Its bounded
    deny cache also fails closed rather than evicting a prior revocation.
+   After verifying a newly persisted pairing, the trusted host may use
+   `ActivateOwnerGrantsAsync` to admit only its new grant IDs. Activation waits
+   for the old executor to finish, checks concurrent revocation, and preserves
+   all old grant tombstones and cancelled job receipts. Revoking the owner again
+   removes this limited admission. No remote caller can invoke this host API.
 6. An executor must honor cancellation and stop/drain actual child processes.
    The runtime reports `Cancelling` until execution returns, never pretends a
    process has stopped. Shutdown fails visibly after five seconds if an

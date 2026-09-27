@@ -29,6 +29,17 @@ public sealed class RelayEndpointIdentity
         }
     }
 
+    /// <summary>Proof of possession for one exact enrollment claim; no private material is exported.</summary>
+    public byte[] SignEnrollmentTranscript(ReadOnlySpan<byte> transcript)
+    {
+        if (transcript.Length is < 100 or > 512) throw new RelayProtocolException("ENROLLMENT_TRANSCRIPT_INVALID");
+        var fields = System.Text.Encoding.UTF8.GetString(transcript).Split('\n');
+        if (fields.Length != 6 || fields[0] != "JTS-PAIR-1" || !Guid.TryParseExact(fields[1], "D", out var id)
+            || id == Guid.Empty || id.ToString("D") != fields[1] || fields.Skip(2).Any(f => !RelayWire.IsDeviceId(f)))
+            throw new RelayProtocolException("ENROLLMENT_TRANSCRIPT_INVALID");
+        return Sign(transcript);
+    }
+
     internal static string CertificateDeviceId(X509Certificate2 certificate)
     {
         using var key = certificate.GetECDsaPublicKey()

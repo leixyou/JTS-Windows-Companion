@@ -1,8 +1,9 @@
-# Optional unattended first-install window
+# Windows connection manager and first installation
 
 This is the managed Windows x64 UI behind the separate 2.5 native bootstrap,
-calling the unattended installation library. It is not the existing 2.0 current-user installer, an updater, a repair
-tool or an uninstaller. Its executable manifest requests Windows administrator
+calling the unattended installation library and the authenticated local enrollment
+management service. It is not the existing 2.0 current-user installer, an updater,
+a repair tool or an uninstaller. Its executable manifest requests Windows administrator
 approval. Authenticode remains optional; the build-embedded P-256 release key
 and signed project release manifest are required.
 
@@ -43,35 +44,49 @@ The installation library separately authenticates and holds the other three
 EXEs and authenticated native DLLs. An unsigned development build without a complete manifest cannot be
 used to bypass these checks.
 
-The relay field starts empty, with no official domain or IP default. Enter an
-explicit HTTPS root origin. Outer TLS certificate PKI checks are skipped by default;
-inner device-pinned mutual TLS remains mandatory. Review and
-acknowledge the two dedicated standard accounts, the automatic Authority service,
-the on-demand Worker, and the independent pairing/capability/MCP authorization.
-Click **Install**; the library then shows a final confirmation defaulting to No.
-The separate [owner-delegated CLI](../../docs/RELAY_ENDPOINT_INSTALLATION.md)
-imports a SHA-256-pinned public request from the AI-enabled Mac target without
-another pairing prompt. UAC and payload verification remain. No automatic
-installation on window load, upgrade, repair or transaction replay is supported.
+No arguments or `--manage` opens the same connection manager. Paste the one-use
+code from an AI-enabled Mac device and select **Connect**. On a new computer,
+strict code validation supplies the relay origin before any installation begins.
+The local services install once, then the code is submitted to the Authority's
+administrator-authenticated management pipe. Already-installed computers go
+directly to that pipe. The setup process never writes the pairing database.
 
-During the transaction the inputs, close button and window close action are
-disabled. There is no global process-kill or mid-transaction cancellation button.
-The library's synchronous native launch is entered on the UI thread so its brief
-process-window-station switch cannot race WinForms window creation; subsequent
-asynchronous process/service waits return to the message pump. OS shutdown or
-forced termination can still interrupt a process: the durable transaction record
-must be reviewed locally, not deleted or replayed. A completed first install
-reports only local SCM startup, with public device and enrollment identifiers;
-it does not claim relay connectivity, pairing, remote access or acceptance.
+The code is masked and cleared after submission. The service persists the attempt
+and resumes the exchange after interruption; closing this window does not cancel
+it. Status refreshes every two seconds. **Cancel pairing** closes an unbound
+attempt, and **Revoke access** removes a bound device. `pending`, `claimed`,
+`committing`, `bound`, `revoking`, `revoked`, `cancelled`, `expired` and error
+states remain distinct. No extra human pairing approval follows the Mac's
+AI-control authorization. Windows UAC and signed payload verification remain.
 
-UI errors are selected only from complete fixed codes. Unknown errors get a fixed
-safe message; exception messages, nested errors, local paths and secrets are not
-shown or logged. Only pre-transaction declined confirmation or rejected origin
-permits another click. Other outcomes require local review or closing Setup.
+Pairing and RDP are displayed separately. No RDP login is required to bind. RDP
+failure does not consume an unbound, unexpired code, and it does not invalidate
+an established binding. Bound credentials persist until revocation. This window
+does not test RDP credentials or change RDP/NLA/firewall configuration.
+
+**Install without pairing** accepts an explicit HTTPS root origin for installation
+before a code is available. The field has no relay default. Outer TLS certificate
+PKI checks are skipped by default; inner device-pinned mutual TLS is required.
+The separate [public-request CLI](../../docs/RELAY_ENDPOINT_INSTALLATION.md)
+remains supported for explicit first installation.
+
+`--status` emits public status JSON and `rdpStatus:"notChecked"`. `--enroll-code`
+reads one line of at most 4096 characters from standard input, never an argument
+or a file. Use an already elevated interactive administrator shell so UAC does
+not discard the redirected streams. Codes and arbitrary exception details are
+never printed. The native parent passes only three duplicated standard handles.
+
+During installation the close button and window close action are disabled. The
+synchronous native launch runs on the UI thread so its brief window-station switch
+cannot race WinForms window creation. A failed or interrupted transaction remains
+for local review; the manager does not automatically delete, repair or rerun it.
+An older service without the new management pipe reports unavailable and retains
+all state. Updating that older service requires a separate migration workflow.
+No action runs installation merely because the window was opened.
 
 ## Development package status and open gates
 
-The 2026-09-19 package-attempt-5 evidence (historical local evidence, not included)
+The [2026-09-19 package-attempt-5 evidence](../../../build/2.5-evidence/20260919-unattended-setup/package-attempt-5/packaging-evidence.json)
 records four managed Windows x64 bundles, a native AMD64 bootstrap requesting
 `requireAdministrator`, a verified Core public-key resource, the schema-2 manifest
 and six matching bootstrap payload resources. The macOS-hosted cross-build and

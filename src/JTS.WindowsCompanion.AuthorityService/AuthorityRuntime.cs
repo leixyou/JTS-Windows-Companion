@@ -32,6 +32,24 @@ internal sealed class AuthorityRuntime(DateTimeOffset expiry, Func<CancellationT
         }
         finally { _disposeGate.Release(); }
     }
-    internal static AuthorityRuntime Own(CompanionRelayControlService service, DateTimeOffset expiry, IReadOnlyList<IDisposable> resources)
-        => new(expiry, service.RunAsync, service.DisposeAsync, resources);
+    internal static AuthorityRuntime Own(CompanionRelayControlService service, DateTimeOffset expiry, IReadOnlyList<IDisposable> resources,
+        params Func<CancellationToken, Task>[] additional)
+        => new(expiry, token => RunTogetherAsync([service.RunAsync, .. additional], token), service.DisposeAsync, resources);
+    internal static async Task RunTogetherAsync(Func<CancellationToken, Task>[] components, CancellationToken token)
+    {
+        using var linked = CancellationTokenSource.CreateLinkedTokenSource(token);
+        var tasks = new List<Task>();
+        try
+        {
+            foreach (var run in components) tasks.Add(run(linked.Token));
+            var first = await Task.WhenAny(tasks).ConfigureAwait(false);
+            await first.ConfigureAwait(false);
+            if (!token.IsCancellationRequested) throw new AuthorityException("AUTHORITY_COMPONENT_STOPPED");
+        }
+        finally
+        {
+            linked.Cancel();
+            try { await Task.WhenAll(tasks).ConfigureAwait(false); } catch { /* Every component observed; propagate the first failure. */ }
+        }
+    }
 }

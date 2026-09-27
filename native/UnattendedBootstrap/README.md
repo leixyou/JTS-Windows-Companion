@@ -2,8 +2,8 @@
 
 This Windows x64 C++ bootstrap prepares a protected directory before starting any
 managed installer code. It creates no accounts or services and grants no remote
-access. The managed first-install library remains responsible for its separate,
-visible installation confirmation and transaction. This source has **not been
+access. The managed connection manager owns the explicit installation action
+and transaction; the Mac AI-control setting authorizes delegated pairing. This source has **not been
 compiled or accepted on Windows** in the current development increment.
 
 ## Trust and startup boundary
@@ -62,15 +62,21 @@ protected DACLs, flushed and rehashed through a reopened read-only handle. These
 runs. No write-access image handle is retained during process loading.
 
 The only child is the absolute staged `JTS.WindowsCompanion.UnattendedSetup.exe`,
-with either no arguments or the bounded explicit delegated-install argument string,
-no inherited handles, and the staging directory as its working
-directory. Its explicit Unicode environment contains only OS/profile paths,
-System32-only PATH and the private staging Temp/TMP. Ambient `DOTNET_*`,
-`COMPlus_*`, `COR_*`, profiler variables, credentials and relay settings are not
-copied. The native startup notice does not authorize installation; the managed
-screen obtains the relay choice and actual confirmation. The delegated CLI instead
-requires the strict, SHA-256-pinned owner authorization request; the authenticated
-managed child validates all eight arguments before installation. No shell is used.
+with a bounded argument string validated by the authenticated managed entry point.
+Normal GUI and public-request installation inherit no handles. The explicit
+`--status` and `--enroll-code` modes pass only duplicated standard input/output/error
+handles via `PROC_THREAD_ATTRIBUTE_HANDLE_LIST`. No other ambient handles are
+inherited, and a missing enrollment stdin fails before child launch. Invoke CLI
+modes from an already elevated administrator shell so UAC does not discard a pipe.
+The code itself is not a command argument or a saved file. CLI failures return a
+nonzero exit code without showing an unattended message box.
+
+The staging directory is the child's working directory. Its explicit Unicode
+environment contains only OS/profile paths, System32-only PATH and private
+staging Temp/TMP. Ambient `DOTNET_*`, `COMPlus_*`, `COR_*`, profiler variables,
+credentials and relay settings are not copied. There is no additional native
+confirmation dialog. The managed screen takes the code or explicit install
+action; Windows elevation and authenticated payload checks remain. No shell is used.
 
 The bootstrap waits on the exact child-process handle. A quit request or wait
 failure is not interpreted as cancellation or proof of cleanup. All staging is
@@ -121,7 +127,9 @@ static runtime libraries are required. Output is `JTS.WindowsCompanion.Setup.exe
 Do not replace missing native toolchains with a managed self-extracting launcher.
 The final local inventory found clang++, CMake, `x86_64-w64-mingw32-g++` and
 `x86_64-w64-mingw32-windres` on the macOS host, but no MSVC `cl`. This source-writing
-subtask installed no toolchain and ran no native build.
+initial subtask installed no toolchain and ran no native build. The subsequent
+one-use-code entry change compiled Main.cpp and Child.cpp with MinGW-w64
+`-Wall -Wextra -Werror`; it did not run a Windows executable.
 
 Before delivery, build with both supported configurations, inspect PE imports,
 the manifest and embedded file table, verify the outer release checksum, then

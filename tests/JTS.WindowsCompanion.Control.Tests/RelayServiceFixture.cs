@@ -14,6 +14,7 @@ internal sealed class RelayServiceFixture : IAsyncDisposable, IControlRelayPairi
     internal Guid GrantId { get; } = Guid.NewGuid();
     internal ControlRelayPairing? Pairing { get; set; }
     internal ControlGrant Grant { get; }
+    internal Dictionary<Guid, ControlGrant> AdditionalGrants { get; } = [];
     internal DurableJobStore Store { get; }
     internal CompanionRelayControlService Service { get; }
     internal Task? Run { get; private set; }
@@ -45,7 +46,7 @@ internal sealed class RelayServiceFixture : IAsyncDisposable, IControlRelayPairi
         AfterRevoke?.Invoke(); return ValueTask.CompletedTask;
     }
     public ValueTask<ControlGrant?> FindAsync(string owner, Guid grant, CancellationToken token)
-        => ValueTask.FromResult(owner == Owner && grant == GrantId ? Grant : null);
+        => ValueTask.FromResult(owner != Owner ? null : grant == GrantId ? Grant : AdditionalGrants.GetValueOrDefault(grant));
     public async ValueTask<JobExecutionResult> ExecuteAsync(JobBinding binding, ReadOnlyMemory<byte> payload, IJobOutputSink output, CancellationToken token)
     {
         Interlocked.Increment(ref Executions); Started.TrySetResult();
@@ -75,6 +76,8 @@ internal sealed class FakeRelayConnector : IControlRelayConnector
     internal Func<CancellationToken, Task<IReadOnlyList<RelayChannelOffer>>>? Poll;
     internal Func<CompanionControlHost, RelayChannelOffer, CancellationToken, Task>? Serve;
     internal int PresenceCount, PollCount, ClosedCount;
+    internal bool AllLanes;
+    public bool Supports(RelayLane lane) => AllLanes || lane == RelayLane.Control;
     public Task TouchPresenceAsync(CancellationToken token)
     { Interlocked.Increment(ref PresenceCount); return Touch?.Invoke(token) ?? Task.CompletedTask; }
     public Task<IReadOnlyList<RelayChannelOffer>> PollAsync(CancellationToken token)

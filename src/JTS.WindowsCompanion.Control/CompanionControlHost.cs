@@ -74,7 +74,7 @@ public sealed partial class CompanionControlHost : IAsyncDisposable, IJobGrantAu
         lock (_gate)
         {
             RequireRunning();
-            if (_revokedPeers.Contains(connection.Owner)) throw new ControlProtocolException("CONTROL_PAIRING_REVOKED");
+            if (PeerBlocked(connection.Owner)) throw new ControlProtocolException("CONTROL_PAIRING_REVOKED");
             if (_connections.Count >= 16 || _connections.Values.Count(c => c.Owner == connection.Owner) >= 4
                 || !_connections.TryAdd(binding.SessionId, connection))
                 throw new ControlProtocolException("CONTROL_CONNECTION_LIMIT");
@@ -87,7 +87,7 @@ public sealed partial class CompanionControlHost : IAsyncDisposable, IJobGrantAu
             lock (_gate)
             {
                 RequireRunning();
-                if (_revokedPeers.Contains(connection.Owner)) throw new ControlProtocolException("CONTROL_PAIRING_REVOKED");
+                if (PeerBlocked(connection.Owner)) throw new ControlProtocolException("CONTROL_PAIRING_REVOKED");
                 _runtime.SetOwnerConnected(connection.Owner, true);
                 connection.Authenticated = true;
             }
@@ -135,6 +135,8 @@ public sealed partial class CompanionControlHost : IAsyncDisposable, IJobGrantAu
             if (!_revokedPeers.Contains(owner) && _revokedPeers.Count >= 4096)
             { _shutdown.Cancel(); throw new ControlProtocolException("CONTROL_AUTHORIZATION_CAPACITY"); }
             _revokedPeers.Add(owner); _runtime.RevokeOwner(owner);
+            _readmittedPeerGrants.Remove(owner);
+            _peerRevocationVersions[owner] = _peerRevocationVersions.GetValueOrDefault(owner) + 1;
             affected = _connections.Values.Where(c => c.Owner == owner).ToArray();
         }
         foreach (var connection in affected)
@@ -148,7 +150,7 @@ public sealed partial class CompanionControlHost : IAsyncDisposable, IJobGrantAu
         lock (_gate)
         {
             RequireRunning();
-            if (_revokedPeers.Contains(owner) || _revoked.Contains((owner, grantId)) || grant is null || grant.OwnerDeviceId != owner || grant.GrantId != grantId
+            if (PeerGrantBlocked(owner, grantId) || _revoked.Contains((owner, grantId)) || grant is null || grant.OwnerDeviceId != owner || grant.GrantId != grantId
                 || grant.ExpiresAt <= _clock.GetUtcNow() || !grant.Allows(operation))
                 throw new ControlProtocolException("CONTROL_GRANT_REJECTED");
             return grant;

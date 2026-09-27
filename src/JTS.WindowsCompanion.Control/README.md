@@ -8,7 +8,7 @@ Its direct stream entry point, `ServeAsync`, performs pinned mutual TLS and exac
 control-lane binding itself. `ServeRelayAsync` uses the sealed relay client's
 authenticated channel path before the same dispatcher. No public plaintext dispatch method exists. Every
 request uses a required local `IControlGrantProvider`; authenticated device identity
-does not confer execution permission. See the [endpoint control contract](../../Protocols/JTSCompanion/control-v1.md).
+does not confer execution permission. See the [endpoint control contract](../../../Protocols/JTSCompanion/control-v1.md).
 
 The service also dispatches independently authorized file/RDP lanes through
 `RelayFileLane` and `RelayRdpLane`, after the same pinned TLS/binding step. It uses
@@ -91,8 +91,13 @@ relay admission, or infer permissions from an RDP/DVC profile.
 - Local `RevokePairingAsync` persists first, then cancels all work for that owner,
   including detached jobs, and closes its sessions. Cancellation after successful
   persistence cannot skip live enforcement. Failed persistence stops the service
-  without claiming durable revocation. Re-pairing does not reactivate an owner in
-  the same live service; a fresh explicitly authorized service lifetime is required.
+  without claiming durable revocation. Local enrollment can explicitly call
+  `ActivatePairingAsync` for the exact newly persisted epoch. It serializes against
+  revocation and offer acceptance, drains old sessions and execution, and admits
+  only the new epoch's control grants. Owner/grant tombstones and cancelled jobs
+  are retained. A second revocation removes this grant-scoped admission; repeating
+  the same activation does not interrupt its new live sessions. This is a local
+  composition API, never a remote control operation.
 - Other owners and their capability records are not rewritten. Pairing, endpoint
   capabilities and MCP-client authorization remain separate approval boundaries.
   Unexpected scheduler failure closes networking. Shutdown cancels sessions and

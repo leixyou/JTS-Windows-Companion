@@ -60,15 +60,20 @@ public sealed partial class CompanionRelayControlService : IAsyncDisposable
     public async ValueTask RevokePairingAsync(string owner, Guid pairingId, CancellationToken token = default)
     {
         ControlPolicyCodec.Identity(owner, pairingId);
-        try { await _pairings.RevokeAsync(owner, pairingId, token).ConfigureAwait(false); }
-        catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
-        catch
+        await _pairingLifecycle.WaitAsync(token).ConfigureAwait(false);
+        try
         {
-            SetStatus(RelayControlServiceState.Faulted, "CONTROL_PAIRING_REVOCATION_NOT_DURABLE");
-            _stop.Cancel(); throw new ControlProtocolException("CONTROL_PAIRING_REVOCATION_NOT_DURABLE");
+            try { await _pairings.RevokeAsync(owner, pairingId, token).ConfigureAwait(false); }
+            catch (OperationCanceledException) when (token.IsCancellationRequested) { throw; }
+            catch
+            {
+                SetStatus(RelayControlServiceState.Faulted, "CONTROL_PAIRING_REVOCATION_NOT_DURABLE");
+                _stop.Cancel(); throw new ControlProtocolException("CONTROL_PAIRING_REVOCATION_NOT_DURABLE");
+            }
+            // Cancellation after a durable commit must not skip live cancellation.
+            StopPeer(owner);
         }
-        // Cancellation after a durable commit must not skip live cancellation.
-        StopPeer(owner);
+        finally { _pairingLifecycle.Release(); }
     }
 
     public ValueTask RevokeGrantDurablyAsync(string owner, Guid grantId, CancellationToken token = default)

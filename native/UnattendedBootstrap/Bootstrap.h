@@ -44,6 +44,7 @@ SystemPaths ReadSystemPaths();
 Staging CreateStaging(const SystemPaths& paths);
 std::vector<Handle> ExtractPayload(const Staging& staging);
 DWORD RunManagedSetup(const SystemPaths& paths, const Staging& staging, const std::wstring& arguments);
+bool IsConsoleEntry(const std::wstring& arguments);
 std::string HashBytes(const unsigned char* bytes, ULONG length);
 std::string HashFile(HANDLE file);
 }

@@ -85,6 +85,15 @@ class CompanionNextPackageTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             builder.validate(args)
 
+    def test_authorized_lab_handoff_cannot_claim_release_identity(self):
+        host = Path(sys.executable).resolve()
+        args = builder.options(["--dotnet", str(host), "--tool-dotnet", str(host), "--output", str(self.root / "lab"),
+                                "--development", "--authorized-lab", "--mingw-prefix", "fixture-"])
+        builder.validate(args)
+        args.development = False
+        with self.assertRaises(ValueError):
+            builder.validate(args)
+
     def test_opt_in_build_graph_does_not_relax_native_extraction(self):
         text = (ROOT / "Directory.Build.targets").read_text()
         self.assertIn("'$(JtsNextPackageBuild)' == 'true'", text)

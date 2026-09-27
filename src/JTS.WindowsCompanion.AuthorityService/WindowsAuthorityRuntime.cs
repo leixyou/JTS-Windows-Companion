@@ -1,6 +1,7 @@
 using System.Runtime.Versioning;
 using System.Security.Principal;
 using JTS.WindowsCompanion.Control;
+using JTS.WindowsCompanion.Enrollment;
 using JTS.WindowsCompanion.Execution;
 using JTS.WindowsCompanion.Pairing;
 using JTS.WindowsCompanion.Relay;
@@ -55,7 +56,12 @@ internal static class WindowsAuthorityRuntime
             var service = new CompanionRelayControlService(relay, jobs, grants, new DurableControlRelayPairings(pairings), executor,
                 lanes: new Dictionary<RelayLane, ICompanionRelayLaneHandler> { [RelayLane.File] = files, [RelayLane.Rdp] = new RelayRdpLane(pairings) },
                 waitForRelayAdmission: true);
-            return AuthorityRuntime.Own(service, identity.Description.CertificateExpiresAt, resources);
+            var enrollment = new EnrollmentCoordinator(State("enrollment-attempts.sealed"), config.RelayOrigin.AbsoluteUri,
+                identity.Description.PublicKeySpkiBase64, identity.Identity, protector, p => { WindowsProtectedDataPath.Require(p, account); },
+                pairings, grants, service.RevokePairingAsync, service.RevokeGrantDurablyAsync, service.ActivatePairingAsync);
+            resources.Add(enrollment);
+            var management = new WindowsEnrollmentManagementServer(account, enrollment);
+            return AuthorityRuntime.Own(service, identity.Description.CertificateExpiresAt, resources, enrollment.RunAsync, management.RunAsync);
         }
         catch
         {

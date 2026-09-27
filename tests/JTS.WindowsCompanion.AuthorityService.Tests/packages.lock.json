@@ -147,6 +147,7 @@
         "type": "Project",
         "dependencies": {
           "JTS.WindowsCompanion.Control": "[2.0.0, )",
+          "JTS.WindowsCompanion.Enrollment": "[2.0.0, )",
           "JTS.WindowsCompanion.Execution": "[2.0.0, )",
           "JTS.WindowsCompanion.WorkerService": "[2.0.0, )"
         }
@@ -162,6 +163,13 @@
       },
       "jts.windowscompanion.core": {
         "type": "Project"
+      },
+      "jts.windowscompanion.enrollment": {
+        "type": "Project",
+        "dependencies": {
+          "JTS.WindowsCompanion.Control": "[2.0.0, )",
+          "JTS.WindowsCompanion.WorkerService": "[2.0.0, )"
+        }
       },
       "jts.windowscompanion.execution": {
         "type": "Project",

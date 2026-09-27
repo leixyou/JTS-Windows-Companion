@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/JTS.WindowsCompanion.Enrollment/JTS.WindowsCompanion.Enrollment.csproj" />
     <Project Path="src/JTS.WindowsCompanion.Relay/JTS.WindowsCompanion.Relay.csproj" />
     <Project Path="src/JTS.WindowsCompanion.Runtime/JTS.WindowsCompanion.Runtime.csproj" />
     <Project Path="src/JTS.WindowsCompanion.Pairing/JTS.WindowsCompanion.Pairing.csproj" />
@@ -14,6 +15,7 @@
     <Project Path="src/JTS.WindowsCompanion.UnattendedSetup/JTS.WindowsCompanion.UnattendedSetup.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/JTS.WindowsCompanion.Enrollment.Tests/JTS.WindowsCompanion.Enrollment.Tests.csproj" />
     <Project Path="tests/JTS.WindowsCompanion.Relay.Tests/JTS.WindowsCompanion.Relay.Tests.csproj" />
     <Project Path="tests/JTS.WindowsCompanion.Runtime.Tests/JTS.WindowsCompanion.Runtime.Tests.csproj" />
     <Project Path="tests/JTS.WindowsCompanion.Pairing.Tests/JTS.WindowsCompanion.Pairing.Tests.csproj" />

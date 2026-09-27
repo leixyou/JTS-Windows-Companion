@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 namespace JTS.WindowsCompanion.Runtime;
 
 /// <summary>Explicitly pumped, serial job scheduler. No service, user impersonation or command executor is installed implicitly.</summary>
-public sealed class DurableJobRuntime : IAsyncDisposable
+public sealed partial class DurableJobRuntime : IAsyncDisposable
 {
     private readonly DurableJobStore _store;
     private readonly IJobGrantAuthority _authority;
@@ -117,6 +117,8 @@ public sealed class DurableJobRuntime : IAsyncDisposable
                 throw new JobRuntimeException("JOB_AUTHORIZATION_CAPACITY");
             }
             _revokedOwners.Add(ownerDeviceId); _connected.Remove(ownerDeviceId);
+            _readmittedGrants.Remove(ownerDeviceId);
+            _ownerRevocationVersions[ownerDeviceId] = _ownerRevocationVersions.GetValueOrDefault(ownerDeviceId) + 1;
             foreach (var job in _store.ActiveFor(ownerDeviceId, null, false)) CancelCore(job.Binding, "PAIRING_REVOKED");
         }
     }
@@ -152,7 +154,7 @@ public sealed class DurableJobRuntime : IAsyncDisposable
                 if (_store.Get(binding.RequestId, binding.OwnerDeviceId, binding.GrantId).State != DurableJobState.Queued) return true;
                 if (binding.Deadline <= _clock.GetUtcNow())
                 { _store.Finish(binding.RequestId, DurableJobState.Expired, "DEADLINE_EXPIRED"); return true; }
-                if (!authorized || _revokedOwners.Contains(binding.OwnerDeviceId) || _revoked.Contains((binding.OwnerDeviceId, binding.GrantId)))
+                if (!authorized || OwnerRejectsGrant(binding.OwnerDeviceId, binding.GrantId) || _revoked.Contains((binding.OwnerDeviceId, binding.GrantId)))
                 { _store.Finish(binding.RequestId, DurableJobState.Cancelled, "GRANT_REVOKED"); return true; }
                 if (!binding.AllowDisconnected && !_connected.Contains(binding.OwnerDeviceId))
                 { _store.Finish(binding.RequestId, DurableJobState.Cancelled, "OWNER_DISCONNECTED"); return true; }
@@ -209,6 +211,7 @@ public sealed class DurableJobRuntime : IAsyncDisposable
             if (payload is not null) CryptographicOperations.ZeroMemory(payload);
             lock (_gate) { if (ReferenceEquals(_active, active)) _active = null; }
             active?.Dispose();
+            active?.Finished.TrySetResult();
             _dispatch.Release();
         }
     }
@@ -232,7 +235,7 @@ public sealed class DurableJobRuntime : IAsyncDisposable
     }
     private void RequireGrant(JobBinding binding)
     {
-        if (_revokedOwners.Contains(binding.OwnerDeviceId) || _revoked.Contains((binding.OwnerDeviceId, binding.GrantId)))
+        if (OwnerRejectsGrant(binding.OwnerDeviceId, binding.GrantId) || _revoked.Contains((binding.OwnerDeviceId, binding.GrantId)))
             throw new JobRuntimeException("JOB_GRANT_REJECTED");
     }
     private void RequireRunning()
@@ -299,6 +302,7 @@ public sealed class DurableJobRuntime : IAsyncDisposable
         public bool DeadlineElapsed => _deadline.IsCancellationRequested;
         public string? CancelCode { get; set; }
         public string? FailureCode { get; set; }
+        public TaskCompletionSource Finished { get; } = new(TaskCreationOptions.RunContinuationsAsynchronously);
         public ActiveJob(JobBinding binding, CancellationToken parent, TimeSpan remaining, TimeProvider clock)
         {
             Binding = binding;

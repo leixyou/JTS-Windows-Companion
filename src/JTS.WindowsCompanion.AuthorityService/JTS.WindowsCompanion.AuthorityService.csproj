@@ -5,6 +5,7 @@
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../JTS.WindowsCompanion.Enrollment/JTS.WindowsCompanion.Enrollment.csproj" />
     <ProjectReference Include="../JTS.WindowsCompanion.Control/JTS.WindowsCompanion.Control.csproj" />
     <ProjectReference Include="../JTS.WindowsCompanion.Execution/JTS.WindowsCompanion.Execution.csproj" />
     <ProjectReference Include="../JTS.WindowsCompanion.WorkerService/JTS.WindowsCompanion.WorkerService.csproj" />
