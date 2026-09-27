@@ -63,6 +63,25 @@ internal sealed class EnrollmentFixture : IDisposable
     internal RevocationRequest Sign(RevocationRequest request) => request with { SignatureBase64 = Convert.ToBase64String(_controller.SignData(
         request.Transcript(), HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation)) };
     internal void Deliver(RevocationRequest request) => Revocations.Pending.Add(new(request, Request.ControllerSPKIBase64));
+    internal void RewriteAttempt(Func<EnrollmentAttempt, EnrollmentAttempt> rewrite)
+    {
+        Coordinator.Dispose();
+        using (var store = new EnrollmentAttemptStore(Path, Identity.DeviceId, _protector, _ => { })) store.Save(rewrite(store.Attempts.Single()));
+        Coordinator = Open();
+    }
+    internal void PersistRevocationOnly(RevocationRequest request)
+    {
+        Coordinator.Dispose();
+        using (var journal = new RevocationJournal(Path + ".revocations", Identity.DeviceId, _protector, _ => { }))
+            journal.Save(new(new(request, Request.ControllerSPKIBase64)));
+        Coordinator = Open();
+    }
+    internal void Startup(Action<string>? checkpoint = null)
+    {
+        Coordinator.Dispose();
+        try { EnrollmentCoordinator.PrepareStartupCore(Path, "https://relay.example.test", Identity.DeviceId, _protector, _ => { }, Pairings, Grants, Clock, checkpoint); }
+        finally { Coordinator = Open(); }
+    }
     internal void Restart() { Coordinator.Dispose(); Coordinator = Open(); }
     internal void Confirm()
     {

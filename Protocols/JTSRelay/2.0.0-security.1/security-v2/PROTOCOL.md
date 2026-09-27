@@ -103,7 +103,8 @@ requestedAtUnixSeconds
 `requestHash = SHA256(UTF8(transcript) || decodedRaw64MacSignature)` in lowercase
 hex. Requests do not expire: an offline endpoint must still revoke the exact
 named pairing/grant epoch when it reconnects. An old epoch must not revoke a
-newly paired epoch. Request timestamps allow at most 30 seconds future skew.
+newly paired epoch. Revocation timestamps are positive integer metadata; they
+are not compared across controller, endpoint or node clocks for authorization.
 
 Windows completion object:
 `{version:2,revocationId,requestHash,controllerDeviceId,peerDeviceId,revokedAtUnixSeconds,signatureBase64}`.
@@ -119,8 +120,8 @@ revokedAtUnixSeconds
 ```
 
 Windows must durably tombstone exact grants/pairing and stop/drain their active
-and detached jobs before signing completion. Completion time is no earlier than
-request time and no later than node time +30 seconds. Mac verifies with its
+and detached jobs before signing completion. Completion time need not follow
+request time on a different device's wall clock. Mac verifies with its
 locally pinned peer key. A relay-only state transition is not completion.
 
 Submit/status/complete return exactly:

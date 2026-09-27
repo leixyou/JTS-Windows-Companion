@@ -205,7 +205,7 @@ public sealed partial class EnrollmentCoordinator : IDisposable
         confirmation.Verify(a, VerifiedRequest(a), _identity.DeviceId, _clock);
         a = a with { State = "committing", ErrorCode = null, Confirmation = confirmation }; _store.Save(a); _checkpoint?.Invoke("commit-authorized"); await CommitAsync(a, token).ConfigureAwait(false);
     }
-    private RelayDelegatedEnrollment VerifiedRequest(EnrollmentAttempt a)
+    private static RelayDelegatedEnrollment VerifiedRequest(EnrollmentAttempt a)
     {
         var bytes = EnrollmentCrypto.Base64(a.RequestBase64!, 16384);
         if (EnrollmentCrypto.Hash(bytes) != a.RequestSha256 || a.VerifiedAt is null) throw new EnrollmentException("ENROLLMENT_STATE_INVALID");
@@ -215,7 +215,7 @@ public sealed partial class EnrollmentCoordinator : IDisposable
     {
         var request = VerifiedRequest(a);
         if (a.Confirmation is null) throw new EnrollmentException("ENROLLMENT_CONFIRMATION_REQUIRED");
-        a.Confirmation.Verify(a, request, _identity.DeviceId, _clock);
+        a.Confirmation.Verify(a, request, _identity.DeviceId, _clock, recovery: true);
         _grants.ApproveLocally(new(request.ControllerDeviceID, request.GrantID, DateTimeOffset.MaxValue,
             Enum.GetValues<ControlOperation>(), ["powershell.v1"], allowDisconnected: true));
         _checkpoint?.Invoke("grant-persisted");

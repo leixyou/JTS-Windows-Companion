@@ -105,3 +105,14 @@ revocation and independence from RDP. Windows-only tests exercise actual pipe to
 inspection and rejection of an impostor server before any secret is sent. These
 checks do not replace installation, live SCM/account/profile behavior and a full
 Mac → relay → Windows acceptance run on the intended target OS.
+
+## Upgrading an existing code journal
+
+Before creating an executing control host, Authority replays durable revocation
+intents into pairing/grant tombstones. An older code journal marked `bound` or
+`committing` without a signed v2 Mac confirmation is retired with
+`ENROLLMENT_LEGACY_CONFIRMATION_REQUIRED`; generate a fresh code to pair again.
+The Windows identity and unrelated devices remain intact. This does not reinterpret
+an explicit local JSON installation with no code journal as relay confirmation.
+No upgrade or recovery path generates a revocation completion before the live
+runtime has confirmed that the old executor and sessions stopped.

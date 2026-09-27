@@ -25,13 +25,13 @@ internal sealed record EnrollmentConfirmation(int Version, string RelayOrigin, s
             p.GetProperty("signatureBase64").GetString()!);
     }
 
-    internal void Verify(EnrollmentAttempt a, RelayDelegatedEnrollment request, string peer, TimeProvider clock)
+    internal void Verify(EnrollmentAttempt a, RelayDelegatedEnrollment request, string peer, TimeProvider clock, bool recovery = false)
     {
         if (Version != 2 || RelayOrigin != a.RelayOrigin || InvitationId != a.InvitationId.ToString("D")
             || ControllerDeviceId != request.ControllerDeviceID || PeerDeviceId != peer || ClaimHash != a.ClaimHash
             || ExpiresAtUnixSeconds != request.ExpiresAtUtc.ToUnixTimeSeconds()
             || ExpiresAtUnixSeconds != a.ExpiresAtUnixSeconds || ConfirmedAtUnixSeconds < request.IssuedAtUtc.ToUnixTimeSeconds()
-            || ConfirmedAtUnixSeconds >= ExpiresAtUnixSeconds || ConfirmedAtUnixSeconds > clock.GetUtcNow().ToUnixTimeSeconds()) throw Invalid();
+            || ConfirmedAtUnixSeconds >= ExpiresAtUnixSeconds || (!recovery && ConfirmedAtUnixSeconds > clock.GetUtcNow().ToUnixTimeSeconds())) throw Invalid();
         var spki = EnrollmentCrypto.Base64(request.ControllerSPKIBase64, 512);
         using var key = ECDsa.Create(); key.ImportSubjectPublicKeyInfo(spki, out var used);
         if (used != spki.Length || !key.VerifyData(Transcript(), EnrollmentCrypto.Base64(SignatureBase64, 64),

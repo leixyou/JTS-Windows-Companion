@@ -43,6 +43,9 @@ internal static class WindowsAuthorityRuntime
             var pairings = new DurableRelayPairingStore(pairingPath, config.DeviceId, protector); resources.Add(pairings);
             var grants = new DurableControlGrantStore(grantsPath, protector); resources.Add(grants);
             var jobs = new DurableJobStore(jobsPath, protector); resources.Add(jobs);
+            // Replay deny intents before a scheduler can resume queued detached work. Legacy code journals are not v2 consent.
+            EnrollmentCoordinator.PrepareStartup(State("enrollment-attempts.sealed"), config.RelayOrigin.AbsoluteUri,
+                config.DeviceId, protector, p => { WindowsProtectedDataPath.Require(p, account); }, pairings, grants);
             // Recheck newly created SQLite auxiliary files, then validate Worker image before creating an executing host.
             State("pairings.sqlite"); State("control-grants.sqlite"); State("jobs.sqlite");
             using (WindowsServiceProgramTrust.Open(config.Worker.ExecutablePath, CompanionServiceProgram.Worker)) { }

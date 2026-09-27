@@ -18,20 +18,7 @@ public sealed partial class EnrollmentCoordinator
     private async Task ApplyRemoteRevocationCoreAsync(RevocationRequest request, CancellationToken token)
     {
         var epoch = RevocationRequest.Id(request.PairingId); var grant = RevocationRequest.Id(request.GrantId);
-        RelayPairingRecord? record = null;
-        for (var offset = 0; offset < 4096; offset += 64)
-        {
-            var page = _pairings.ListLocally(offset, 64); record = page.SingleOrDefault(p => p.PairingId == epoch);
-            if (record is not null || page.Count < 64) break;
-        }
-        var attempt = _store.Attempts.SingleOrDefault(a => a.RequestBase64 is not null && a.ControllerDeviceId == request.ControllerDeviceId
-            && VerifiedRequest(a).PairingID == epoch);
-        var expected = record?.Policy ?? (attempt is not null ? VerifiedRequest(attempt).Pairing() : null);
-        if (expected is null || expected.ControllerDeviceId != request.ControllerDeviceId
-            || !expected.GrantsFor(RelayLane.Control).SequenceEqual(new[] { grant })
-            || !expected.GrantsFor(RelayLane.File).SequenceEqual(new[] { RevocationRequest.Id(request.FileGrantId) })
-            || !expected.GrantsFor(RelayLane.Rdp).SequenceEqual(new[] { RevocationRequest.Id(request.RdpGrantId) }))
-            throw RevocationRequest.Invalid();
+        var (attempt, record) = MatchRevocation(request, _store, _pairings);
         if (attempt is not null && attempt.State != "revoked")
         { attempt = attempt with { State = "revoking", SecretBase64 = "", ErrorCode = null }; _store.Save(attempt); }
         var current = await _pairings.FindAsync(request.ControllerDeviceId, token).ConfigureAwait(false);
