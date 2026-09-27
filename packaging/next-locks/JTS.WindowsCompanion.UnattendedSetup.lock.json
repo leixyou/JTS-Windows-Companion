@@ -70,6 +70,13 @@
       "jts.windowscompanion.core": {
         "type": "Project"
       },
+      "jts.windowscompanion.enrollment": {
+        "type": "Project",
+        "dependencies": {
+          "JTS.WindowsCompanion.Control": "[2.5.0, )",
+          "JTS.WindowsCompanion.WorkerService": "[2.5.0, )"
+        }
+      },
       "jts.windowscompanion.execution": {
         "type": "Project",
         "dependencies": {

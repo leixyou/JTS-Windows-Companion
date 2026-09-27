@@ -21,6 +21,17 @@ jobs:
       - run: dotnet build JTS.WindowsCompanion.sln --configuration Release
       - run: dotnet restore JTS.WindowsCompanion.Next.slnx --locked-mode
       - run: dotnet build JTS.WindowsCompanion.Next.slnx --configuration Release --no-restore
+      - name: Verify locked self-contained packaging graphs
+        shell: pwsh
+        run: |
+          $packageArtifacts = Join-Path $env:RUNNER_TEMP 'jts-next-package-restore'
+          foreach ($role in @('AuthorityService', 'WorkerRunner', 'AuthorityProvisioner', 'UnattendedSetup')) {
+            dotnet restore "src/JTS.WindowsCompanion.$role/JTS.WindowsCompanion.$role.csproj" --locked-mode --nologo --runtime win-x64 --artifacts-path $packageArtifacts -p:SelfContained=true -p:JtsNextPackageBuild=true
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+          if (git status --porcelain -- packaging/next-locks) {
+            throw 'Packaging restore changed or created an uncommitted dependency lock.'
+          }
       - run: dotnet test tests/JTS.WindowsCompanion.Control.Tests --configuration Release --no-build
       - run: dotnet test tests/JTS.WindowsCompanion.Runtime.Tests --configuration Release --no-build --filter FullyQualifiedName~OwnerReactivationTests
       - run: dotnet test tests/JTS.WindowsCompanion.Relay.Tests --configuration Release --no-build
